@@ -1,0 +1,227 @@
+---
+import {ChevronDown} from '@lucide/astro';
+import { leader, assistants, administration } from "@/data/Executive";
+---
+
+<section class="w-full bg-[#050505] py-32 px-4 overflow-hidden relative" id="pengurus">
+  <!-- Blueprint Grid Pattern -->
+  <div class="absolute inset-0 opacity-[0.03] pointer-events-none" style="background-image: radial-gradient(#fff 1px, transparent 1px); background-size: 30px 30px;"></div>
+  <div class="absolute inset-0 opacity-[0.05] pointer-events-none" style="background-image: linear-gradient(#fff 1px, transparent 1px), linear-gradient(90deg, #fff 1px, transparent 1px); background-size: 150px 150px;"></div>
+
+  <!-- Radial Glows -->
+  <div class="absolute top-0 left-1/4 w-[500px] h-[500px] bg-primary/5 rounded-full pointer-events-none"></div>
+  <div class="absolute bottom-0 right-1/4 w-[500px] h-[500px] bg-amber-500/5 rounded-full pointer-events-none"></div>
+
+  <div class="container mx-auto relative z-10">
+    <!-- Header -->
+    <div class="text-center mb-20 md:mb-40">
+      <h2 class="text-4xl md:text-6xl lg:text-7xl font-black text-white leading-[0.8] tracking-tighter uppercase mb-8">
+        STRUKTUR<br/>
+        <span class="text-transparent bg-clip-text bg-linear-to-b from-primary to-primary/50">PENGURUS</span>
+      </h2>
+      <p class="text-white/40 text-lg md:text-xl font-medium max-w-2xl mx-auto leading-relaxed px-4">
+        Struktur Pengurus MPK SMK Negeri 1 Kandeman Periode 2026/2027
+      </p>
+    </div>
+
+    <div class="max-w-7xl mx-auto">
+      <!-- Ketua Umum -->
+      <div class="flex flex-col items-center mb-32">
+        <div class="relative group w-full max-w-4xl">
+          <div class="exec-card relative aspect-3/4 rounded-[40px] overflow-hidden border border-white/10 bg-[#0a0a0a] shadow-2xl transition-all duration-500 group-hover:border-amber-500/30">
+            {/* Main Images */}
+            <img 
+              src={leader.image} 
+              alt={leader.name} 
+              class="exec-img absolute inset-0 w-full h-full object-cover transition-transform duration-1000 group-hover:scale-110 scale-[1.02]"
+            />
+            
+            {/* Overlays */}
+            <div class="absolute inset-0 bg-linear-to-t from-black via-black/40 to-transparent opacity-80 z-10 transition-opacity duration-500 group-hover:opacity-70"></div>
+            <div class={`exec-color-overlay absolute inset-0 bg-linear-to-br ${leader.color} to-transparent opacity-0 group-hover:opacity-40 z-20 transition-all duration-500 mix-blend-overlay`}></div>
+
+            {/* Content */}
+            <div class="absolute inset-0 p-10 md:p-20 flex flex-col justify-end z-30">
+              <div class="exec-content relative transition-transform duration-700 group-hover:-translate-y-2">
+                <span class="text-amber-500 font-black tracking-[0.4em] text-sm uppercase block mb-4">{leader.role}</span>
+                <h3 class="text-3xl md:text-6xl font-black text-white uppercase tracking-tighter mb-4 leading-[0.9] drop-shadow-2xl">
+                  {leader.name}
+                </h3>
+                <p class="text-white/60 font-bold text-xl tracking-[0.2em] uppercase mb-10">{leader.class}</p>
+                
+                <div class="exec-details max-h-0 group-hover:max-h-48 overflow-hidden transition-all duration-700 ease-in-out opacity-0 group-hover:opacity-100">
+                  <div class="pt-10 border-t border-white/10">
+                    <p class="text-white/60 md:text-xl text-lg max-w-2xl leading-relaxed italic">"{leader.description}"</p>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        
+        <div class="w-px h-32 bg-linear-to-b from-amber-500/50 to-transparent hidden md:block mt-8"></div>
+      </div>
+
+      <!-- Ketua 1 & 2 -->
+      <div class="relative mb-32">
+        <div class="absolute top-0 left-[25%] right-[25%] h-px bg-white/10 hidden md:block"></div>
+        
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-12 pt-12">
+          {assistants.map((member, index) => (
+            <div class="flex flex-col items-center">
+              <div class="w-px h-16 bg-white/10 hidden md:block mb-8"></div>
+              
+              <div class="relative group w-full">
+                <div class="exec-card relative aspect-3/4 rounded-[32px] overflow-hidden border border-white/10 bg-[#0a0a0a] shadow-xl transition-all duration-500 group-hover:border-white/20">
+                  <img 
+                    src={member.image} 
+                    alt={member.name} 
+                    class="exec-img absolute inset-0 w-full h-full object-cover transition-transform duration-1000 group-hover:scale-110 scale-[1.02]"
+                  />
+                  
+                  <div class="absolute inset-0 bg-linear-to-t from-black via-black/40 to-transparent opacity-80 z-10 transition-opacity duration-500 group-hover:opacity-70"></div>
+                  <div class={`exec-color-overlay absolute inset-0 bg-linear-to-br ${member.color} to-transparent opacity-0 group-hover:opacity-40 z-20 transition-all duration-500 mix-blend-overlay`}></div>
+
+                  <div class="absolute inset-0 p-10 md:p-14 flex flex-col justify-end z-30">
+                    <div class="exec-content relative transition-transform duration-700 group-hover:-translate-y-2">
+                      <span class="text-primary font-black tracking-widest text-[10px] uppercase block mb-2">{member.role}</span>
+                      <h3 class="text-3xl md:text-5xl font-black text-white uppercase tracking-tighter mb-2 leading-none">{member.name}</h3>
+                      <p class="text-white/40 font-bold text-lg tracking-widest mb-8 uppercase">{member.class}</p>
+                      
+                      <div class="exec-details max-h-0 group-hover:max-h-40 overflow-hidden transition-all duration-700 ease-in-out opacity-0 group-hover:opacity-100">
+                        <div class="pt-8 border-t border-white/10">
+                          <p class="text-white/50 text-sm leading-relaxed italic">
+                            "{member.description}"
+                          </p>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Decorative Role Initial */}
+                  <span class="exec-number absolute -bottom-8 -right-8 text-[150px] md:text-[250px] font-black text-white/5 leading-none select-none group-hover:text-white/10 transition-all duration-700">
+                    K{index + 1}
+                  </span>
+                </div>
+              </div>
+              <div class="w-px h-16 bg-white/10 hidden md:block mt-8"></div>
+            </div>
+          ))}
+        </div>
+      </div>
+
+      <!-- Administration -->
+      <div class="relative">
+        <div class="absolute top-0 left-[16.6%] right-[16.6%] h-px bg-white/10 hidden md:block"></div>
+        
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-8 pt-12">
+          {administration.map((member) => (
+            <div class="flex flex-col items-center">
+              <div class="w-px h-12 bg-white/10 hidden md:block mb-8"></div>
+              
+              <div class="relative group w-full">
+                <div class="exec-card relative aspect-3/4 rounded-[24px] overflow-hidden border border-white/10 bg-[#0a0a0a] shadow-lg transition-all duration-500 group-hover:border-white/20">
+                  <img 
+                    src={member.image} 
+                    alt={member.name} 
+                    class="exec-img absolute inset-0 w-full h-full object-cover transition-transform duration-1000 group-hover:scale-110 scale-[1.02]"
+                  />
+                  
+                  <div class="absolute inset-0 bg-linear-to-t from-black via-black/40 to-transparent opacity-80 z-10 transition-opacity duration-500 group-hover:opacity-80"></div>
+                  <div class={`exec-color-overlay absolute inset-0 bg-linear-to-br ${member.color} to-transparent opacity-0 group-hover:opacity-30 z-20 transition-all duration-500 mix-blend-overlay`}></div>
+
+                  <div class="absolute inset-0 p-8 flex flex-col justify-end z-30">
+                    <div class="exec-content relative transition-transform duration-700 group-hover:-translate-y-1">
+                      <span class="text-white/40 font-black tracking-widest text-[9px] uppercase block mb-1">{member.role}</span>
+                      <h3 class="text-2xl font-black text-white uppercase tracking-tight mb-1 leading-tight">{member.name}</h3>
+                      <p class="text-white/40 font-bold text-[10px] tracking-widest mb-6 uppercase">{member.class}</p>
+                      
+                      <div class="exec-details max-h-0 group-hover:max-h-32 overflow-hidden transition-all duration-700 ease-in-out opacity-0 group-hover:opacity-100">
+                        <div class="pt-6 border-t border-white/5">
+                          <p class="text-white/30 text-sm leading-relaxed italic">
+                            "{member.description}"
+                          </p>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Decorative Role Initial */}
+                  <span class="exec-number absolute -bottom-6 -right-6 text-[120px] md:text-[180px] font-black text-white/5 leading-none select-none group-hover:text-white/10 transition-all duration-700">
+                    {member.role.substring(0, 3)}
+                  </span>
+                </div>
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
+
+
+
+    </div>
+
+    <!-- Footer Decorative -->
+    <div class="mt-40 flex flex-col items-center">
+      <div class="w-px h-24 bg-linear-to-b from-white/10 to-transparent mb-8"></div>
+      <div class="animate-bounce">
+        <ChevronDown class="text-white/20 w-8 h-8" />
+      </div>
+    </div>
+  </div>
+</section>
+
+<style>
+  /* Mobile touch-active */
+  .group.is-active .exec-card {
+    border-color: rgba(255,255,255,0.2);
+  }
+  .group.is-active .exec-img {
+    transform: scale(1.10);
+  }
+  .group.is-active .exec-color-overlay {
+    opacity: 0.4;
+  }
+  .group.is-active .exec-content {
+    transform: translateY(-0.5rem);
+  }
+  .group.is-active .exec-details {
+    max-height: 200px;
+    opacity: 1;
+  }
+  .group.is-active .exec-number {
+    color: rgba(255,255,255,0.1);
+  }
+</style>
+
+<script>
+  function initExecTouch() {
+    const cards = document.querySelectorAll('#pengurus .group');
+    
+    cards.forEach((card) => {
+      card.addEventListener('click', (e) => {
+        const isMobile = window.matchMedia('(max-width: 768px)').matches || 'ontouchstart' in window;
+        if (!isMobile) return;
+        
+        e.preventDefault();
+        e.stopPropagation();
+        
+        const wasActive = card.classList.contains('is-active');
+        cards.forEach(c => c.classList.remove('is-active'));
+        if (!wasActive) {
+          card.classList.add('is-active');
+        }
+      });
+    });
+
+    document.addEventListener('click', (e) => {
+      const target = e.target as HTMLElement;
+      if (!target.closest('#pengurus .group')) {
+        cards.forEach(c => c.classList.remove('is-active'));
+      }
+    });
+  }
+
+  document.addEventListener('astro:page-load', initExecTouch);
+  initExecTouch();
+</script>

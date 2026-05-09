@@ -22,7 +22,6 @@
 		"astro": "^6.3.1",
 		"class-variance-authority": "^0.7.1",
 		"clsx": "^2.1.1",
-		"lucide-react": "^1.14.0",
 		"radix-ui": "^1.4.3",
 		"shadcn": "^4.7.0",
 		"svelte": "^5.55.5",
@@ -33,7 +32,10 @@
 	},
 	"devDependencies": {
 		"@biomejs/biome": "^2.4.14",
+		"@internationalized/date": "^3.12.0",
+		"bits-ui": "^2.16.3",
 		"shadcn-svelte": "^1.2.7",
+		"sharp": "^0.34.5",
 		"tailwind-variants": "^3.2.2"
 	}
 }
