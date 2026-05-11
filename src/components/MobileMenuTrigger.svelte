@@ -1,5 +1,5 @@
 <script lang="ts">
-import { Menu } from "@lucide/svelte";
+import Menu from "@lucide/svelte/icons/menu";
 import { Button } from "@/components/ui/button";
 import { useSidebar } from "@/components/ui/sidebar";
 
