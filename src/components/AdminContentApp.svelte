@@ -15,6 +15,7 @@ import { flip } from "svelte/animate";
 
 import * as Alert from "@/components/ui/alert/index.js";
 import { api } from "@/lib/eden";
+import { upload } from "@vercel/blob/client";
 
 // Auth State
 let isAuthenticated = $state(false);
@@ -52,6 +53,7 @@ let isSubmitting = $state(false);
 let kategori = $state("berita");
 let editingId = $state<string | null>(null);
 let imagePreview = $state("");
+let selectedFile = $state<File | null>(null);
 
 // Data State
 let aspirations: any[] = $state([]);
@@ -171,6 +173,17 @@ async function handlePublish(e: Event) {
 			image: form.image,
 		};
 
+		if (selectedFile) {
+			const fileExtension = selectedFile.name.split(".").pop();
+			const fileName = `images/${crypto.randomUUID()}.${fileExtension}`;
+			await upload(fileName, selectedFile, {
+				access: "public",
+				handleUploadUrl: "/api/misc/upload",
+				headers: { "x-api-key": apiKey },
+			});
+			payload.image = `/api/misc/${fileName}`;
+		}
+
 		if (editingId) {
 			const { data, error } = await api.news({ id: editingId }).put(payload, {
 				headers: { "x-api-key": apiKey },
@@ -197,6 +210,7 @@ async function handlePublish(e: Event) {
 		};
 		editingId = null;
 		imagePreview = "";
+		selectedFile = null;
 		fetchData();
 	} catch (err: any) {
 		addToast(
@@ -214,13 +228,8 @@ async function handleFileChange(e: Event) {
 	const file = target.files?.[0];
 	if (!file) return;
 
-	const reader = new FileReader();
-	reader.onload = (e) => {
-		const base64 = e.target?.result as string;
-		imagePreview = base64;
-		form.image = base64;
-	};
-	reader.readAsDataURL(file);
+	selectedFile = file;
+	imagePreview = URL.createObjectURL(file);
 }
 
 function handleEditNews(news: any) {
@@ -255,6 +264,7 @@ function cancelEdit() {
 		category: "berita",
 		image: "",
 	};
+	selectedFile = null;
 }
 
 async function deleteNews(id: string) {
@@ -306,7 +316,6 @@ async function deleteNews(id: string) {
 				<p class="text-muted-foreground">Otorisasi diperlukan untuk masuk ke dalam sistem.</p>
 			</div>
 
-
 			<form onsubmit={handleLogin} class="space-y-4">
 				<input
 					type="password"
@@ -356,126 +365,125 @@ async function deleteNews(id: string) {
 			<div class="flex flex-col lg:flex-row gap-12">
 				<div class="w-full lg:w-64 shrink-0">
 					<nav class="sticky top-28 space-y-2">
-						<a
-							href="#publish-content"
-							class={`w-full flex items-center gap-3 px-4 py-3 rounded-xl font-bold transition-all no-underline ${activeSection === "publish-content" ? "bg-primary/10 text-primary" : "text-muted-foreground hover:text-foreground hover:bg-muted"}`}
+						<button
+							onclick={() => activeSection = "publish-content"}
+							class={`w-full flex items-center gap-3 px-4 py-3 rounded-xl font-bold transition-all ${activeSection === "publish-content" ? "bg-primary/10 text-primary" : "text-muted-foreground hover:text-foreground hover:bg-muted"}`}
 						>
 							<Newspaper class="w-5 h-5" />
 							Publish Konten
-						</a>
-						<a
-							href="#manage-news"
-							class={`w-full flex items-center gap-3 px-4 py-3 rounded-xl font-bold transition-all no-underline ${activeSection === "manage-news" ? "bg-primary/10 text-primary" : "text-muted-foreground hover:text-foreground hover:bg-muted"}`}
+						</button>
+						<button
+							onclick={() => activeSection = "manage-news"}
+							class={`w-full flex items-center gap-3 px-4 py-3 rounded-xl font-bold transition-all ${activeSection === "manage-news" ? "bg-primary/10 text-primary" : "text-muted-foreground hover:text-foreground hover:bg-muted"}`}
 						>
 							<Edit class="w-5 h-5" />
 							Daftar Berita
-						</a>
-						<a
-							href="#aspirasi"
-							class={`w-full flex items-center gap-3 px-4 py-3 rounded-xl font-bold transition-all no-underline ${activeSection === "aspirasi" ? "bg-primary/10 text-primary" : "text-muted-foreground hover:text-foreground hover:bg-muted"}`}
+						</button>
+						<button
+							onclick={() => activeSection = "aspirasi"}
+							class={`w-full flex items-center gap-3 px-4 py-3 rounded-xl font-bold transition-all ${activeSection === "aspirasi" ? "bg-primary/10 text-primary" : "text-muted-foreground hover:text-foreground hover:bg-muted"}`}
 						>
 							<MessageSquare class="w-5 h-5" />
 							Aspirasi Siswa
-						</a>
+						</button>
 					</nav>
 				</div>
 
 				<div class="flex-1 space-y-20">
 					<!-- Publish Konten -->
-                    <section id="publish-content" class="scroll-mt-32">
-                        <div class="mb-8">
-                            <h2 class="text-2xl font-black text-foreground flex items-center gap-2">
-                                <Plus class="w-6 h-6 text-primary" />
-                                {editingId ? 'Edit Konten' : 'Form Publikasi'}
-                        </h2>
-                        <p class="text-muted-foreground mt-1">
-                            {editingId ? 'Perbarui informasi yang sudah ada.' : 'Tambahkan berita atau informasi penting untuk halaman utama.'}
-                        </p>
-                    </div>
+					<section id="publish-content" class="scroll-mt-32">
+						<div class="mb-8">
+							<h2 class="text-2xl font-black text-foreground flex items-center gap-2">
+								<Plus class="w-6 h-6 text-primary" />
+								{editingId ? 'Edit Konten' : 'Form Publikasi'}
+							</h2>
+							<p class="text-muted-foreground mt-1">
+								{editingId ? 'Perbarui informasi yang sudah ada.' : 'Tambahkan berita atau informasi penting untuk halaman utama.'}
+							</p>
+						</div>
 
+						<form onsubmit={handlePublish} class="space-y-6 max-w-3xl">
+							<div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+								<div class="space-y-2 md:col-span-2">
+									<label for="kategori" class="text-sm font-bold text-foreground">Kategori Konten</label>
+									<div class="relative">
+										<select bind:value={kategori} class="w-full px-5 py-3 rounded-xl bg-muted border border-transparent focus:bg-background focus:border-primary focus:ring-2 focus:ring-primary/20 outline-none transition-all font-bold text-foreground appearance-none">
+											<option value="berita">BERITA</option>
+											<option value="info">INFO PENTING</option>
+										</select>
+										<ChevronRight class="absolute right-5 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground rotate-90 pointer-events-none" />
+									</div>
+								</div>
 
-                    <form onsubmit={handlePublish} class="space-y-6 max-w-3xl">
-                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                            <div class="space-y-2 md:col-span-2">
-                                <label for="kategori" class="text-sm font-bold text-foreground">Kategori Konten</label>
-                                <div class="relative">
-                                    <select bind:value={kategori} class="w-full px-5 py-3 rounded-xl bg-muted border border-transparent focus:bg-background focus:border-primary focus:ring-2 focus:ring-primary/20 outline-none transition-all font-bold text-foreground appearance-none">
-                                        <option value="berita">BERITA</option>
-                                        <option value="info">INFO PENTING</option>
-                                    </select>
-                                    <ChevronRight class="absolute right-5 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground rotate-90 pointer-events-none" />
-                                </div>
-                            </div>
+								<div class="space-y-2 md:col-span-2">
+									<label for="judul" class="text-sm font-bold text-foreground">Judul</label>
+									<input id="judul" type="text" bind:value={form.title} placeholder="Masukkan judul..." class="w-full px-5 py-3 rounded-xl bg-muted border border-transparent focus:bg-background focus:border-primary focus:ring-2 focus:ring-primary/20 outline-none transition-all font-medium text-foreground" required />
+								</div>
 
-                            <div class="space-y-2 md:col-span-2">
-                                <label for="judul" class="text-sm font-bold text-foreground">Judul</label>
-                                <input id="judul" type="text" bind:value={form.title} placeholder="Masukkan judul..." class="w-full px-5 py-3 rounded-xl bg-muted border border-transparent focus:bg-background focus:border-primary focus:ring-2 focus:ring-primary/20 outline-none transition-all font-medium text-foreground" required />
-                            </div>
+								{#if kategori === 'berita'}
+									<div class="space-y-2 md:col-span-2">
+										<label for="ringkasan" class="text-sm font-bold text-foreground">Isi Berita</label>
+										<textarea id="ringkasan" rows="4" bind:value={form.excerpt} placeholder="Tulis isi berita..." class="w-full px-5 py-3 rounded-xl bg-muted border border-transparent focus:bg-background focus:border-primary focus:ring-2 focus:ring-primary/20 outline-none transition-all font-medium text-foreground" required></textarea>
+									</div>
 
-                            {#if kategori === 'berita'}
-                                <div class="space-y-2 md:col-span-2">
-                                    <label for="ringkasan" class="text-sm font-bold text-foreground">Isi Berita</label>
-                                    <textarea id="ringkasan" rows="4" bind:value={form.excerpt} placeholder="Tulis isi berita..." class="w-full px-5 py-3 rounded-xl bg-muted border border-transparent focus:bg-background focus:border-primary focus:ring-2 focus:ring-primary/20 outline-none transition-all font-medium text-foreground" required></textarea>
-                                </div>
+									<div class="space-y-2 md:col-span-2">
+										<label for="penulis" class="text-sm font-bold text-foreground">Nama Penulis</label>
+										<input id="penulis" type="text" bind:value={form.author} placeholder="Misal: Admin MPK" class="w-full px-5 py-3 rounded-xl bg-muted border border-transparent focus:bg-background focus:border-primary focus:ring-2 focus:ring-primary/20 outline-none transition-all font-medium text-foreground" required />
+									</div>
 
-                                <div class="space-y-2 md:col-span-2">
-                                    <label for="penulis" class="text-sm font-bold text-foreground">Nama Penulis</label>
-                                    <input id="penulis" type="text" bind:value={form.author} placeholder="Misal: Admin MPK" class="w-full px-5 py-3 rounded-xl bg-muted border border-transparent focus:bg-background focus:border-primary focus:ring-2 focus:ring-primary/20 outline-none transition-all font-medium text-foreground" required />
-                                </div>
+									<div class="space-y-2 md:col-span-2">
+										<label for="foto" class="text-sm font-bold text-foreground">Foto Berita</label>
+										<div class="flex flex-col md:flex-row gap-4 items-start">
+											{#if imagePreview}
+												<div class="relative group w-full md:w-48 h-32 rounded-xl overflow-hidden border-2 border-primary/20">
+													<img src={imagePreview} alt="Preview" class="w-full h-full object-cover" />
+													<button 
+														type="button"
+														onclick={() => { imagePreview = ""; form.image = ""; selectedFile = null; }}
+														class="absolute top-2 right-2 p-1.5 bg-destructive text-white rounded-lg opacity-0 group-hover:opacity-100 transition-opacity"
+													>
+														<Trash2 class="w-4 h-4" />
+													</button>
+												</div>
+											{/if}
+											<div class="flex-1 w-full">
+												<input 
+													id="foto" 
+													type="file" 
+													accept="image/*" 
+													onchange={handleFileChange}
+													class="w-full px-5 py-2.5 rounded-xl bg-muted border border-transparent focus:bg-background focus:border-primary focus:ring-2 focus:ring-primary/20 outline-none transition-all text-foreground file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-bold file:bg-primary file:text-primary-foreground hover:file:bg-primary/90 file:cursor-pointer cursor-pointer" 
+												/>
+												<p class="text-[10px] text-muted-foreground mt-2 font-medium italic">Format: JPG, PNG, WEBP. Maks 10MB.</p>
+											</div>
+										</div>
+									</div>
+								{/if}
+							</div>
 
-                                <div class="space-y-2 md:col-span-2">
-                                    <label for="foto" class="text-sm font-bold text-foreground">Foto Berita</label>
-                                    <div class="flex flex-col md:flex-row gap-4 items-start">
-                                        {#if imagePreview}
-                                            <div class="relative group w-full md:w-48 h-32 rounded-xl overflow-hidden border-2 border-primary/20">
-                                                <img src={imagePreview} alt="Preview" class="w-full h-full object-cover" />
-                                                <button 
-                                                    type="button"
-                                                    onclick={() => { imagePreview = ""; form.image = ""; }}
-                                                    class="absolute top-2 right-2 p-1.5 bg-destructive text-white rounded-lg opacity-0 group-hover:opacity-100 transition-opacity"
-                                                >
-                                                    <Trash2 class="w-4 h-4" />
-                                                </button>
-                                            </div>
-                                        {/if}
-                                        <div class="flex-1 w-full">
-                                            <input 
-                                                id="foto" 
-                                                type="file" 
-                                                accept="image/*" 
-                                                onchange={handleFileChange}
-                                                class="w-full px-5 py-2.5 rounded-xl bg-muted border border-transparent focus:bg-background focus:border-primary focus:ring-2 focus:ring-primary/20 outline-none transition-all text-foreground file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-bold file:bg-primary file:text-primary-foreground hover:file:bg-primary/90 file:cursor-pointer cursor-pointer" 
-                                            />
-                                            <p class="text-[10px] text-muted-foreground mt-2 font-medium italic">Format: JPG, PNG, WEBP. Maks 10MB.</p>
-                                        </div>
-                                    </div>
-                                </div>
-                                {/if}
-                            </div>
+							<div class="pt-4 flex gap-3">
+								<button type="submit" class="px-8 py-3 rounded-xl bg-primary text-primary-foreground font-bold hover:bg-primary/90 transition-all shadow-lg shadow-primary/20 flex items-center gap-2" disabled={isSubmitting}>
+									{#if isSubmitting}
+										<Loader2 class="w-5 h-5 animate-spin" />
+										Sedang Memproses...
+									{:else}
+										<Save class="w-5 h-5" />
+										{editingId ? 'Simpan Perubahan' : 'Publish Sekarang'}
+									{/if}
+								</button>
 
-                            <div class="pt-4 flex gap-3">
-                                <button type="submit" class="px-8 py-3 rounded-xl bg-primary text-primary-foreground font-bold hover:bg-primary/90 transition-all shadow-lg shadow-primary/20 flex items-center gap-2" disabled={isSubmitting}>
-                                    {#if isSubmitting}
-                                        <Loader2 class="w-5 h-5 animate-spin" />
-                                        Sedang Memproses...
-                                    {:else}
-                                        <Save class="w-5 h-5" />
-                                        {editingId ? 'Simpan Perubahan' : 'Publish Sekarang'}
-                                    {/if}
-                                </button>
-
-                                {#if editingId}
-                                    <button 
-                                        type="button" 
-                                        onclick={cancelEdit}
-                                        class="px-8 py-3 rounded-xl bg-muted text-foreground font-bold hover:bg-muted/80 transition-all"
-                                    >
-                                        Batal
-                                    </button>
-                                {/if}
-                            </div>
-                        </form>
-                    </section>
+								{#if editingId}
+									<button 
+										type="button" 
+										onclick={cancelEdit}
+										class="px-8 py-3 rounded-xl bg-muted text-foreground font-bold hover:bg-muted/80 transition-all"
+									>
+										Batal
+									</button>
+								{/if}
+							</div>
+						</form>
+					</section>
 
 					<!-- Manage News -->
 					<section id="manage-news" class="scroll-mt-32">
