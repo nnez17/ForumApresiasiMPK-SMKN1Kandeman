@@ -107,13 +107,20 @@ const adminLinks = [
 <script>
   function initNav() {
     const navLinks = document.querySelectorAll('.nav-link');
+    const sections = ['home', 'berita', 'pengurus', 'komisi', 'kontak'];
+    const sectionElements = sections.map(id => document.getElementById(id)).filter(el => el !== null);
     
-    function updateActiveState() {
-      const currentHash = window.location.hash;
+    function setActiveLink(activeHref: string) {
       const currentPath = window.location.pathname;
+      const isLandingPage = currentPath === '/' || currentPath === '/index.html';
+      const hrefMap: Record<string, string> = {
+        '#komisi': '#pengurus'
+      };
+      
+      const mappedHref = hrefMap[activeHref] || activeHref;
 
       navLinks.forEach(link => {
-        const border = link.querySelector('div');
+        const border = link.querySelector('.nav-border');
         const href = link.getAttribute('href');
         if (!href) return;
 
@@ -121,8 +128,7 @@ const adminLinks = [
         let isActive = false;
 
         if (isHashLink) {
-          const activeHash = currentHash || '#home';
-          isActive = href === activeHash;
+          isActive = isLandingPage && href === mappedHref;
         } else {
           isActive = currentPath === href || currentPath === href + '/';
         }
@@ -130,27 +136,56 @@ const adminLinks = [
         if (isActive) {
           link.classList.add('text-primary');
           link.classList.remove('text-muted-foreground');
-          if (border) border.classList.replace('h-0', 'h-0.5');
+          if (border) {
+            border.classList.remove('h-0');
+            border.classList.add('h-0.5');
+          }
         } else {
           link.classList.remove('text-primary');
           link.classList.add('text-muted-foreground');
-          if (border) border.classList.replace('h-0.5', 'h-0');
+          if (border) {
+            border.classList.remove('h-0.5');
+            border.classList.add('h-0');
+          }
         }
       });
     }
 
-    updateActiveState();
+    const observerOptions = {
+      root: null,
+      rootMargin: '-20% 0px -70% 0px',
+      threshold: 0
+    };
 
-    navLinks.forEach(link => {
-      link.addEventListener('click', (e) => {
-        const href = link.getAttribute('href');
-        if (href?.startsWith('#')) {
-          setTimeout(updateActiveState, 0);
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          const id = entry.target.id;
+          setActiveLink(`#${id}`);
         }
       });
-    });
+    }, observerOptions);
 
-    window.addEventListener('hashchange', updateActiveState);
+    sectionElements.forEach(section => observer.observe(section));
+
+    function handleInitialState() {
+      const currentPath = window.location.pathname;
+      if (currentPath === '/admin' || currentPath === '/admin/') {
+        setActiveLink('/admin');
+      } else if (window.location.hash) {
+        setActiveLink(window.location.hash);
+      } else if (window.scrollY < 100) {
+        setActiveLink('#home');
+      }
+    }
+
+    handleInitialState();
+
+    window.addEventListener('scroll', () => {
+      if (window.scrollY < 50) {
+        setActiveLink('#home');
+      }
+    }, { passive: true });
   }
 
   initNav();
