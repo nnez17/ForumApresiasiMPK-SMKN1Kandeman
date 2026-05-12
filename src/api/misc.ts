@@ -1,13 +1,13 @@
 import Elysia, { t } from "elysia";
 
 export default new Elysia({
-	prefix: "/keys",
+	prefix: "/misc",
 	detail: {
 		tags: ["Misc"],
 	},
 })
 	.get(
-		"/",
+		"/keys",
 		async ({ query }) => {
 			const { secret } = query;
 

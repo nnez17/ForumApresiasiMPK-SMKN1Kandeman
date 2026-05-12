@@ -99,7 +99,7 @@ async function handleLogin(e: Event) {
 	isLoggingIn = true;
 
 	try {
-		const { data, error } = await api.key.get({
+		const { data, error } = await api.misc.keys.get({
 			query: { secret: passwordInput },
 		});
 
