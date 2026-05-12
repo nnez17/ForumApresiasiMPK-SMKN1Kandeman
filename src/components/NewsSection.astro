@@ -1,5 +1,5 @@
 ---
-import { ArrowRight, ChevronRight, Clock, Search, User } from "@lucide/astro";
+import { ArrowRight, ChevronRight, Clock, Newspaper, Search, User } from "@lucide/astro";
 import { app } from "@/api/elysia";
 import type { NewsItem } from "../data/News";
 
@@ -41,11 +41,17 @@ function isNewItem(createdAt: string) {
       {highlightNews ? (
         <div class="rounded-2xl sm:rounded-3xl overflow-hidden border border-gray-200 bg-white shadow-sm h-full flex flex-col">
           <div class="relative h-48 sm:h-64 md:h-72 lg:h-80 w-full overflow-hidden">
-            <img 
-              src={highlightNews.image || ""} 
-              alt={highlightNews.title} 
-              class="object-cover w-full h-full" 
-            />
+            {highlightNews.image ? (
+              <img 
+                src={highlightNews.image} 
+                alt={highlightNews.title} 
+                class="object-cover w-full h-full group-hover:scale-105 transition-transform duration-500" 
+              />
+            ) : (
+              <div class="w-full h-full bg-gradient-to-br from-primary/20 via-primary/10 to-background flex items-center justify-center">
+                <Newspaper class="w-12 h-12 text-primary/40" />
+              </div>
+            )}
             <div class="absolute top-3 left-3 sm:top-4 sm:left-4 bg-primary text-white text-[10px] sm:text-xs font-black px-3 py-1.5 rounded-full no-drag uppercase tracking-widest shadow-lg">
               TERKINI
             </div>
@@ -136,11 +142,17 @@ function isNewItem(createdAt: string) {
       {recentNews.map((news) => (
         <div class="group flex flex-col bg-white rounded-2xl border border-gray-200 shadow-sm overflow-hidden hover:shadow-md transition-shadow">
           <div class="relative aspect-4/3 overflow-hidden">
-            <img 
-              src={news.image || ""} 
-              alt={news.title} 
-              class="object-cover w-full h-full" 
-            />
+            {news.image ? (
+              <img 
+                src={news.image} 
+                alt={news.title} 
+                class="object-cover w-full h-full group-hover:scale-105 transition-transform duration-500" 
+              />
+            ) : (
+              <div class="w-full h-full bg-gradient-to-br from-primary/20 via-primary/10 to-background flex items-center justify-center">
+                <Newspaper class="w-8 h-8 text-primary/40" />
+              </div>
+            )}
             <div class="absolute top-3 left-3 bg-primary text-white text-[10px] font-black px-3 py-1 rounded-full uppercase tracking-widest shadow-md">
               BERITA
             </div>
