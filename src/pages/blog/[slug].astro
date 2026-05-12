@@ -1,0 +1,28 @@
+---
+import { app } from "@/api/elysia";
+import type { NewsItem } from "@/data/News";
+import Layout from "@/layouts/Layout.astro";
+import Navbar from "@/components/Navbar.astro";
+import BlogPost from "@/components/BlogPost.astro";
+
+const { slug } = Astro.params;
+
+const response = await app.handle(
+	new Request(`http://localhost:4321/api/news/${slug}`),
+);
+const result = await response.json();
+
+if (!result.success) {
+	return Astro.redirect("/404");
+}
+
+const news: NewsItem = result.data;
+---
+
+<Layout>
+    <Navbar />
+    <main class="bg-white min-h-screen">
+        <BlogPost news={news} />
+    </main>
+</Layout>
+

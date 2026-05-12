@@ -1,0 +1,43 @@
+---
+import { ArrowRight, Clock, User } from "@lucide/astro";
+import type { NewsItem } from "@/data/News";
+
+interface Props {
+	news: NewsItem;
+}
+
+const { news } = Astro.props;
+---
+
+<article class="group flex flex-col bg-card rounded-2xl border border-border shadow-sm overflow-hidden">
+    <div class="relative aspect-video overflow-hidden">
+        <img 
+            src={news.image} 
+            alt={news.title} 
+            class="object-cover w-full h-full" 
+        />
+        <div class="absolute top-4 left-4 bg-primary text-white text-[10px] font-black px-3 py-1 rounded-full uppercase tracking-widest shadow-lg">
+            {news.category.toUpperCase()}
+        </div>
+    </div>
+    <div class="p-6 flex flex-col flex-1">
+        <div class="flex items-center text-xs text-muted-foreground mb-3 gap-4">
+            <span class="flex items-center gap-1.5"><Clock class="w-3.5 h-3.5" /> {news.date}</span>
+            <span class="-ml-2 -mr-2">|</span>
+            <span class="flex items-center gap-1.5"><User class="w-3.5 h-3.5" /> {news.author}</span>
+        </div>
+        <h2 class="text-xl font-bold text-foreground mb-3 line-clamp-2 leading-tight">
+            {news.title}
+        </h2>
+        <p class="text-sm text-muted-foreground line-clamp-3 mb-6 flex-1">
+            {news.excerpt}
+        </p>
+        <a 
+            href={`/blog/${news.id}`} 
+            class="inline-flex items-center text-sm font-bold text-primary group/link"
+        >
+            Baca Selengkapnya 
+            <ArrowRight class="ml-2 w-4 h-4 transition-transform group-hover/link:translate-x-1" />
+        </a>
+    </div>
+</article>

@@ -5,10 +5,10 @@ import SidebarCloseLink from "./SidebarCloseLink.svelte";
 
 let {
 	links = [
-		{ name: "Beranda", href: "#home" },
-		{ name: "Berita", href: "#berita" },
-		{ name: "Pengurus", href: "#pengurus" },
-		{ name: "Kontak", href: "#kontak" },
+		{ name: "Beranda", href: "/#home" },
+		{ name: "Berita", href: "/#berita" },
+		{ name: "Pengurus", href: "/#pengurus" },
+		{ name: "Kontak", href: "/#kontak" },
 		{ name: "Admin", href: "/admin" },
 	],
 } = $props();

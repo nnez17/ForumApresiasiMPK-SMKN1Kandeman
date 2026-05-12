@@ -48,25 +48,25 @@ const adminLinks = [
         </>
       ) : (
         <>
-          <a href="#home" class="nav-link relative h-full flex items-center px-4 text-sm font-bold text-primary transition-all hover:text-primary shrink-0 whitespace-nowrap group">
+          <a href="/#home" class="nav-link relative h-full flex items-center px-4 text-sm font-bold text-muted-foreground transition-all hover:text-primary shrink-0 whitespace-nowrap group">
             <span class="relative py-1">
               Beranda
-              <div class="nav-border absolute -bottom-1 left-0 w-full h-0.5 bg-primary rounded-full transition-all"></div>
+              <div class="nav-border absolute -bottom-1 left-0 w-full h-0 bg-primary rounded-full transition-all"></div>
             </span>
           </a>
-          <a href="#berita" class="nav-link relative h-full flex items-center px-4 text-sm font-bold text-muted-foreground transition-all hover:text-primary shrink-0 whitespace-nowrap group">
+          <a href="/#berita" class="nav-link relative h-full flex items-center px-4 text-sm font-bold text-muted-foreground transition-all hover:text-primary shrink-0 whitespace-nowrap group">
             <span class="relative py-1">
               Berita
               <div class="nav-border absolute -bottom-1 left-0 w-full h-0 bg-primary rounded-full transition-all"></div>
             </span>
           </a>
-          <a href="#pengurus" class="nav-link relative h-full flex items-center px-4 text-sm font-bold text-muted-foreground transition-all hover:text-primary shrink-0 whitespace-nowrap group">
+          <a href="/#pengurus" class="nav-link relative h-full flex items-center px-4 text-sm font-bold text-muted-foreground transition-all hover:text-primary shrink-0 whitespace-nowrap group">
             <span class="relative py-1">
               Pengurus
               <div class="nav-border absolute -bottom-1 left-0 w-full h-0 bg-primary rounded-full transition-all"></div>
             </span>
           </a>
-          <a href="#kontak" class="nav-link relative h-full flex items-center px-4 text-sm font-bold text-muted-foreground transition-all hover:text-primary shrink-0 whitespace-nowrap group">
+          <a href="/#kontak" class="nav-link relative h-full flex items-center px-4 text-sm font-bold text-muted-foreground transition-all hover:text-primary shrink-0 whitespace-nowrap group">
             <span class="relative py-1">
               Kontak
               <div class="nav-border absolute -bottom-1 left-0 w-full h-0 bg-primary rounded-full transition-all"></div>
@@ -124,11 +124,17 @@ const adminLinks = [
         const href = link.getAttribute('href');
         if (!href) return;
 
-        const isHashLink = href.startsWith('#');
+        const isHashLink = href.includes('#');
         let isActive = false;
 
         if (isHashLink) {
-          isActive = isLandingPage && href === mappedHref;
+          const hash = href.substring(href.indexOf('#'));
+          isActive = (isLandingPage && hash === mappedHref);
+          
+          // Special case for Blog
+          if (hash === '#berita' && currentPath.startsWith('/blog')) {
+            isActive = true;
+          }
         } else {
           isActive = currentPath === href || currentPath === href + '/';
         }
@@ -170,11 +176,15 @@ const adminLinks = [
 
     function handleInitialState() {
       const currentPath = window.location.pathname;
+      const isLandingPage = currentPath === '/' || currentPath === '/index.html';
+
       if (currentPath === '/admin' || currentPath === '/admin/') {
         setActiveLink('/admin');
+      } else if (currentPath.startsWith('/blog')) {
+        setActiveLink('#berita');
       } else if (window.location.hash) {
         setActiveLink(window.location.hash);
-      } else if (window.scrollY < 100) {
+      } else if (window.scrollY < 100 && isLandingPage) {
         setActiveLink('#home');
       }
     }

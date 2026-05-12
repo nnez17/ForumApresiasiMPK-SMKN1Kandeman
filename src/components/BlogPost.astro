@@ -1,0 +1,124 @@
+---
+import { User, ChevronLeft, Calendar } from "@lucide/astro";
+import type { NewsItem } from "@/data/News";
+import snarkdown from "snarkdown";
+
+interface Props {
+	news: NewsItem;
+}
+
+const { news } = Astro.props;
+---
+
+<div class="container mx-auto px-4 py-12 max-w-4xl">
+    <!-- Header -->
+    <div class="mb-8">
+        <h1 class="text-3xl md:text-4xl font-black text-gray-900 leading-tight mb-4 uppercase tracking-tight">
+            {news.title}
+        </h1>
+
+        <!-- Meta -->
+        <div class="flex flex-wrap gap-4 text-[10px] sm:text-xs text-gray-500 items-center font-medium">
+            <span class="flex items-center gap-1.5">
+                <Calendar class="w-3.5 h-3.5 text-gray-400" /> 
+                {news.date}
+            </span>
+            <span class="-ml-2 -mr-2">|</span>
+            <span class="flex items-center gap-1.5">
+                <User class="w-3.5 h-3.5 text-gray-400" /> 
+                {news.author}
+            </span>
+        </div>
+        <div class="w-full h-px bg-gray-100 mt-6"></div>
+    </div>
+
+    <!-- Featured Image -->
+    <div class="mb-12">
+        <img 
+            src={news.image} 
+            alt={news.title} 
+            class="relative aspect-video overflow-hidden rounded-xl shadow-lg mx-auto max-w-full h-auto object-cover border border-gray-100" 
+        />
+    </div>
+
+    <!-- Content -->
+    <div class="prose-archive max-w-none" set:html={snarkdown(news.excerpt)}>
+    </div>
+
+    <!-- Back Button -->
+    <div class="mt-12">
+        <a 
+            href="/blog" 
+            class="inline-flex items-center px-8 py-3 bg-primary text-white rounded-full text-sm font-black uppercase tracking-wider hover:bg-primary/90 transition-all shadow-md hover:shadow-lg"
+        >
+            <ChevronLeft class="w-4 h-4 mr-2" />
+            Kembali ke Beranda
+        </a>
+    </div>
+</div>
+
+<style>
+    /* Custom Archive Prose Styling */
+    .prose-archive {
+        font-size: 1rem;
+        line-height: 1.8;
+        color: #374151;
+    }
+    
+    .prose-archive :global(p) {
+        margin-bottom: 1.5rem;
+    }
+    
+    .prose-archive :global(h2), .prose-archive :global(h1) {
+        font-size: 1.25rem;
+        font-weight: 800;
+        margin-top: 2.5rem;
+        margin-bottom: 1rem;
+        color: #111827;
+        text-transform: uppercase;
+    }
+    
+    .prose-archive :global(h3) {
+        font-size: 1.1rem;
+        font-weight: 700;
+        margin-top: 2rem;
+        margin-bottom: 0.75rem;
+        color: #111827;
+    }
+    
+    .prose-archive :global(ul), .prose-archive :global(ol) {
+        margin-bottom: 1.5rem;
+        padding-left: 1.25rem;
+    }
+    
+    .prose-archive :global(li) {
+        margin-bottom: 0.5rem;
+        position: relative;
+    }
+
+    .prose-archive :global(ul li::before) {
+        content: "•";
+        color: var(--color-primary);
+        font-weight: bold;
+        display: inline-block; 
+        width: 1em;
+        margin-left: -1em;
+    }
+    
+    .prose-archive :global(strong) {
+        font-weight: 800;
+        color: #111827;
+    }
+    
+    .prose-archive :global(a) {
+        color: var(--color-primary);
+    }
+
+    .prose-archive :global(blockquote) {
+        border-left: 4px solid var(--color-primary);
+        padding-left: 1.5rem;
+        font-style: italic;
+        margin: 2rem 0;
+        color: #4B5563;
+    }
+</style>

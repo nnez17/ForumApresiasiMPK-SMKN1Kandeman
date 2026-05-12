@@ -53,6 +53,7 @@ function isNewItem(createdAt: string) {
           <div class="p-4 sm:p-6 md:p-8 flex flex-col flex-1 items-start">
             <div class="flex items-center text-xs sm:text-sm text-gray-500 mb-3 sm:mb-4 gap-3 sm:gap-4">
               <span class="flex items-center gap-1"><Clock class="w-3.5 h-3.5" /> {highlightNews.date}</span>
+              <span class="-ml-2 -mr-2">|</span>
               <span class="flex items-center gap-1"><User class="w-3.5 h-3.5" /> {highlightNews.author}</span>
             </div>
             <h3 class="text-xl sm:text-2xl md:text-3xl font-bold text-gray-900 mb-3 sm:mb-4 leading-tight cursor-pointer line-clamp-2 hover:text-primary transition-colors">
@@ -61,7 +62,7 @@ function isNewItem(createdAt: string) {
             <p class="text-sm sm:text-base text-gray-600 mb-4 sm:mb-6 line-clamp-3">
               {highlightNews.excerpt}
             </p>
-            <a href={highlightNews.link} class="mt-auto inline-flex items-center justify-center rounded-md text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50 bg-primary text-primary-foreground hover:bg-primary/90 h-9 sm:h-10 px-4 sm:px-6 py-2">
+            <a href={`/blog/${highlightNews.id}`} class="mt-auto inline-flex items-center justify-center rounded-md text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50 bg-primary text-primary-foreground hover:bg-primary/90 h-9 sm:h-10 px-4 sm:px-6 py-2">
               Baca Selengkapnya
               <ArrowRight class="ml-2 w-4 h-4" />
             </a>
@@ -125,7 +126,7 @@ function isNewItem(createdAt: string) {
       <h2 class="text-xl sm:text-2xl font-bold text-gray-900 tracking-tight flex items-center gap-2">
         Berita Terbaru
       </h2>
-      <a href="/berita" class="text-primary font-bold text-sm flex items-center gap-1 hover:underline group">
+      <a href="/blog" class="text-primary font-bold text-sm flex items-center gap-1 hover:underline group">
         Semua Berita 
         <ArrowRight class="w-4 h-4 transition-transform group-hover:translate-x-1" />
       </a>
@@ -154,7 +155,7 @@ function isNewItem(createdAt: string) {
             <p class="text-xs text-gray-600 line-clamp-3 mb-4">
               {news.excerpt}
             </p>
-            <a href={news.link} class="mt-auto flex items-center text-xs font-bold text-primary group/link">
+            <a href={`/blog/${news.id}`} class="mt-auto flex items-center text-xs font-bold text-primary group/link">
               Baca Selengkapnya 
               <ArrowRight class="ml-1 w-3 h-3 transition-transform group-hover/link:translate-x-1" />
             </a>

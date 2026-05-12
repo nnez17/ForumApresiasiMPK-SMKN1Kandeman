@@ -1,15 +1,31 @@
 <script lang="ts">
 import ChevronRight from "@lucide/svelte/icons/chevron-right";
-import Edit from "@lucide/svelte/icons/edit";
+import Bold from "@lucide/svelte/icons/bold";
+import Italic from "@lucide/svelte/icons/italic";
+import LinkIcon from "@lucide/svelte/icons/link";
+import List from "@lucide/svelte/icons/list";
+import Heading from "@lucide/svelte/icons/heading";
+import Eye from "@lucide/svelte/icons/eye";
+import Type from "@lucide/svelte/icons/type";
+import Trash2 from "@lucide/svelte/icons/trash-2";
+import X from "@lucide/svelte/icons/x";
+import Save from "@lucide/svelte/icons/save";
 import Loader2 from "@lucide/svelte/icons/loader-2";
-import LogOut from "@lucide/svelte/icons/log-out";
+import Edit from "@lucide/svelte/icons/edit";
 import MessageSquare from "@lucide/svelte/icons/message-square";
 import Newspaper from "@lucide/svelte/icons/newspaper";
 import Plus from "@lucide/svelte/icons/plus";
-import Save from "@lucide/svelte/icons/save";
-import ShieldCheck from "@lucide/svelte/icons/shield-check";
-import Trash2 from "@lucide/svelte/icons/trash-2";
-import X from "@lucide/svelte/icons/x";
+import EyeOff from "@lucide/svelte/icons/eye-off";
+import ImageUp from "@lucide/svelte/icons/image-up";
+import Send from "@lucide/svelte/icons/send";
+import UserPlus from "@lucide/svelte/icons/user-plus";
+import Users from "@lucide/svelte/icons/users";
+import Key from "@lucide/svelte/icons/key";
+import LogOut from "@lucide/svelte/icons/log-out";
+import Calendar from "@lucide/svelte/icons/calendar";
+import User from "@lucide/svelte/icons/user";
+
+import snarkdown from "snarkdown";
 import { onMount } from "svelte";
 import { flip } from "svelte/animate";
 
@@ -52,6 +68,7 @@ let isSubmitting = $state(false);
 let kategori = $state("berita");
 let editingId = $state<string | null>(null);
 let imagePreview = $state("");
+let isPreviewMode = $state(false);
 
 // Data State
 let aspirations: any[] = $state([]);
@@ -154,6 +171,70 @@ async function fetchData() {
 		console.error("Failed to fetch data:", err);
 	} finally {
 		isLoadingData = false;
+	}
+}
+
+function applyShortcut(type: "bold" | "italic" | "link" | "list" | "heading") {
+	const textarea = document.getElementById("konten") as HTMLTextAreaElement;
+	if (!textarea) return;
+
+	const start = textarea.selectionStart;
+	const end = textarea.selectionEnd;
+	const text = textarea.value;
+	const selectedText = text.substring(start, end);
+	let replacement = "";
+	let cursorOffset = 0;
+	let selectionLength = selectedText.length;
+
+	switch (type) {
+		case "bold":
+			replacement = `**${selectedText}**`;
+			cursorOffset = 2;
+			break;
+		case "italic":
+			replacement = `*${selectedText}*`;
+			cursorOffset = 1;
+			break;
+		case "link":
+			replacement = `[${selectedText || "Link Text"}](https://)`;
+			cursorOffset = 1;
+			selectionLength = selectedText.length || 9;
+			break;
+		case "list":
+			replacement = `\n- ${selectedText}`;
+			cursorOffset = 3;
+			break;
+		case "heading":
+			replacement = `\n## ${selectedText}`;
+			cursorOffset = 4;
+			break;
+	}
+
+	form.content = text.substring(0, start) + replacement + text.substring(end);
+
+	setTimeout(() => {
+		textarea.focus();
+		const newStart = start + cursorOffset;
+		textarea.setSelectionRange(newStart, newStart + selectionLength);
+	}, 0);
+}
+
+function handleKeydown(e: KeyboardEvent) {
+	if (e.ctrlKey || e.metaKey) {
+		switch (e.key.toLowerCase()) {
+			case "b":
+				e.preventDefault();
+				applyShortcut("bold");
+				break;
+			case "i":
+				e.preventDefault();
+				applyShortcut("italic");
+				break;
+			case "k":
+				e.preventDefault();
+				applyShortcut("link");
+				break;
+		}
 	}
 }
 
@@ -414,8 +495,50 @@ async function deleteNews(id: string) {
 
                             {#if kategori === 'berita'}
                                 <div class="space-y-2 md:col-span-2">
-                                    <label for="ringkasan" class="text-sm font-bold text-foreground">Isi Berita</label>
-                                    <textarea id="ringkasan" rows="4" bind:value={form.excerpt} placeholder="Tulis isi berita..." class="w-full px-5 py-3 rounded-xl bg-muted border border-transparent focus:bg-background focus:border-primary focus:ring-2 focus:ring-primary/20 outline-none transition-all font-medium text-foreground" required></textarea>
+                                    <label for="ringkasan" class="text-sm font-bold text-foreground">Ringkasan Berita</label>
+                                    <textarea id="ringkasan" rows="2" bind:value={form.excerpt} placeholder="Tulis ringkasan pendek..." class="w-full px-5 py-3 rounded-xl bg-muted border border-transparent focus:bg-background focus:border-primary focus:ring-2 focus:ring-primary/20 outline-none transition-all font-medium text-foreground text-sm" required></textarea>
+                                </div>
+
+                                <div class="space-y-2 md:col-span-2">
+                                    <div class="flex items-center justify-between mb-1">
+                                        <label for="konten" class="text-sm font-bold text-foreground">Konten Berita (Markdown)</label>
+                                        <div class="flex items-center gap-1 bg-muted p-1 rounded-lg">
+                                            <button type="button" onclick={() => applyShortcut('bold')} class="p-1.5 hover:bg-background rounded-md transition-colors" title="Bold (Ctrl+B)"><Bold class="w-3.5 h-3.5" /></button>
+                                            <button type="button" onclick={() => applyShortcut('italic')} class="p-1.5 hover:bg-background rounded-md transition-colors" title="Italic (Ctrl+I)"><Italic class="w-3.5 h-3.5" /></button>
+                                            <button type="button" onclick={() => applyShortcut('link')} class="p-1.5 hover:bg-background rounded-md transition-colors" title="Link (Ctrl+K)"><LinkIcon class="w-3.5 h-3.5" /></button>
+                                            <button type="button" onclick={() => applyShortcut('list')} class="p-1.5 hover:bg-background rounded-md transition-colors" title="List"><List class="w-3.5 h-3.5" /></button>
+                                            <button type="button" onclick={() => applyShortcut('heading')} class="p-1.5 hover:bg-background rounded-md transition-colors" title="Heading"><Heading class="w-3.5 h-3.5" /></button>
+                                            <div class="w-px h-4 bg-border mx-1"></div>
+                                            <button 
+                                                type="button" 
+                                                onclick={() => isPreviewMode = !isPreviewMode} 
+                                                class={`flex items-center gap-1.5 px-2 py-1 rounded-md transition-all text-[10px] font-black uppercase tracking-wider ${isPreviewMode ? 'bg-primary text-primary-foreground' : 'hover:bg-background text-muted-foreground'}`}
+                                            >
+                                                {#if isPreviewMode}
+                                                    <Type class="w-3 h-3" /> Editor
+                                                {:else}
+                                                    <Eye class="w-3 h-3" /> Preview
+                                                {/if}
+                                            </button>
+                                        </div>
+                                    </div>
+
+                                    {#if isPreviewMode}
+                                        <div class="w-full px-6 py-6 rounded-xl bg-muted/50 border border-border min-h-[300px] prose prose-sm max-w-none prose-headings:text-foreground prose-p:text-muted-foreground prose-strong:text-foreground prose-li:text-muted-foreground">
+                                            {@html snarkdown(form.content || "*Belum ada konten...*")}
+                                        </div>
+                                    {:else}
+                                        <textarea 
+                                            id="konten" 
+                                            rows="12" 
+                                            bind:value={form.content} 
+                                            onkeydown={handleKeydown}
+                                            placeholder="Tulis konten berita lengkap menggunakan Markdown..." 
+                                            class="w-full px-5 py-4 rounded-xl bg-muted border border-transparent focus:bg-background focus:border-primary focus:ring-2 focus:ring-primary/20 outline-none transition-all font-medium text-foreground leading-relaxed" 
+                                            required
+                                        ></textarea>
+                                    {/if}
+                                    <p class="text-[10px] text-muted-foreground mt-1 font-medium italic">Shortcut: Ctrl+B (Bold), Ctrl+I (Italic), Ctrl+K (Link)</p>
                                 </div>
 
                                 <div class="space-y-2 md:col-span-2">
@@ -497,6 +620,7 @@ async function deleteNews(id: string) {
 									<thead>
 										<tr class="border-b-2 border-border">
 											<th class="py-4 pr-4 text-xs font-black text-muted-foreground uppercase tracking-widest">Judul</th>
+											<th class="py-4 px-4 text-xs font-black text-muted-foreground uppercase tracking-widest">Kategori</th>
 											<th class="py-4 px-4 text-xs font-black text-muted-foreground uppercase tracking-widest">Tanggal</th>
 											<th class="py-4 pl-4 text-xs font-black text-muted-foreground uppercase tracking-widest text-right">Aksi</th>
 										</tr>
@@ -507,6 +631,7 @@ async function deleteNews(id: string) {
 												<td class="py-4 pr-4">
 													<div class="font-bold text-foreground line-clamp-1">{news.title}</div>
 												</td>
+												<td class="py-4 px-4 text-sm text-muted-foreground">{news.category.toUpperCase()}</td>
 												<td class="py-4 px-4 text-sm text-muted-foreground">{news.date}</td>
 												<td class="py-4 pl-4 text-right">
 													<div class="flex items-center justify-end gap-2">

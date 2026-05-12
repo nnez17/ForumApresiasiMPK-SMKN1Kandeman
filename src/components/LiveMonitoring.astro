@@ -1,5 +1,20 @@
 ---
 import { CircleCheck, Clock, TriangleAlert } from "@lucide/astro";
+import { app } from "@/api/elysia";
+
+const response = await app.handle(
+	new Request("http://localhost:4321/api/aspirasi/stats"),
+);
+
+const result = await response.json();
+const stats = result.success
+	? result.data
+	: { total: 0, urgent: 0, mid: 0, info: 0 };
+
+const totalAspirasi = stats.total;
+const daruratAspirasi = stats.urgent;
+const sedangAspirasi = stats.mid;
+const infoAspirasi = stats.info;
 ---
 
 <section class="container mx-auto px-4 sm:px-6 py-8 sm:py-10 md:py-12">
@@ -14,7 +29,7 @@ import { CircleCheck, Clock, TriangleAlert } from "@lucide/astro";
   <!-- Total Aspirasi -->
   <div class="p-4 sm:p-6 pb-6 sm:pb-8 flex flex-col items-center justify-center text-center">
     <span class="text-sm font-medium text-gray-500 mb-2">Total Aspirasi Masuk</span>
-    <span class="text-4xl sm:text-5xl font-extrabold text-primary border-b-4 border-primary pb-2">0</span>
+    <span class="text-4xl sm:text-5xl font-extrabold text-primary border-b-4 border-primary pb-2">{totalAspirasi}</span>
   </div>
 
   <!-- Darurat, Sedang, Info -->
@@ -23,21 +38,21 @@ import { CircleCheck, Clock, TriangleAlert } from "@lucide/astro";
     <div class="bg-red-50/50 rounded-xl sm:rounded-2xl p-3 sm:p-4 md:p-6 border border-red-100 flex flex-col items-center justify-center text-center">
       <Clock class="text-red-500 mb-1 sm:mb-2 w-5 h-5 sm:w-6 sm:h-6" />
       <span class="text-[10px] sm:text-xs font-bold text-red-500 uppercase tracking-wider mb-1">Darurat</span>
-      <span class="text-2xl sm:text-3xl md:text-4xl font-extrabold text-red-600">0</span>
+      <span class="text-2xl sm:text-3xl md:text-4xl font-extrabold text-red-600">{daruratAspirasi}</span>
     </div>
 
     <!-- Card 2 -->
     <div class="bg-yellow-50/50 rounded-xl sm:rounded-2xl p-3 sm:p-4 md:p-6 border border-yellow-200 flex flex-col items-center justify-center text-center">
       <TriangleAlert class="text-yellow-600 mb-1 sm:mb-2 w-5 h-5 sm:w-6 sm:h-6" />
       <span class="text-[10px] sm:text-xs font-bold text-yellow-600 uppercase tracking-wider mb-1">Sedang</span>
-      <span class="text-2xl sm:text-3xl md:text-4xl font-extrabold text-yellow-700">0</span>
+      <span class="text-2xl sm:text-3xl md:text-4xl font-extrabold text-yellow-700">{sedangAspirasi}</span>
     </div>
 
     <!-- Card 3 -->
     <div class="bg-blue-50/50 rounded-xl sm:rounded-2xl p-3 sm:p-4 md:p-6 border border-blue-200 flex flex-col items-center justify-center text-center">
       <CircleCheck class="text-blue-500 mb-1 sm:mb-2 w-5 h-5 sm:w-6 sm:h-6" />
       <span class="text-[10px] sm:text-xs font-bold text-blue-600 uppercase tracking-wider mb-1">Info</span>
-      <span class="text-2xl sm:text-3xl md:text-4xl font-extrabold text-primary">0</span>
+      <span class="text-2xl sm:text-3xl md:text-4xl font-extrabold text-primary">{infoAspirasi}</span>
     </div>
   </div>
 </section>
