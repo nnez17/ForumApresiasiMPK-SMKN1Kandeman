@@ -4,7 +4,6 @@
 @import "@fontsource-variable/inter";
 @import "shadcn-svelte/tailwind.css";
 
-
 @theme inline {
 	--font-heading: var(--font-sans);
 	--font-sans: "Inter Variable", sans-serif;
@@ -78,7 +77,6 @@
 	--sidebar-border: #e2e8f0;
 	--sidebar-ring: #0066ff;
 }
-
 
 @layer base {
 	* {

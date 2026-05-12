@@ -1,65 +1,64 @@
 <script lang="ts">
-  import { onMount } from "svelte";
-  import { Tween } from "svelte/motion";
-  import { cubicOut } from "svelte/easing";
-  import { api } from "@/lib/eden";
-  
-  import CircleCheck from "@lucide/svelte/icons/circle-check";
-  import Clock from "@lucide/svelte/icons/clock";
-  import TriangleAlert from "@lucide/svelte/icons/triangle-alert";
+import CircleCheck from "@lucide/svelte/icons/circle-check";
+import Clock from "@lucide/svelte/icons/clock";
+import TriangleAlert from "@lucide/svelte/icons/triangle-alert";
+import { onMount } from "svelte";
+import { cubicOut } from "svelte/easing";
+import { Tween } from "svelte/motion";
+import { api } from "@/lib/eden";
 
-  // Tweened values for animations
-  const totalCount = new Tween(0, { duration: 800, easing: cubicOut });
-  const urgentCount = new Tween(0, { duration: 800, easing: cubicOut });
-  const midCount = new Tween(0, { duration: 800, easing: cubicOut });
-  const infoCount = new Tween(0, { duration: 800, easing: cubicOut });
+// Tweened values for animations
+const totalCount = new Tween(0, { duration: 800, easing: cubicOut });
+const urgentCount = new Tween(0, { duration: 800, easing: cubicOut });
+const midCount = new Tween(0, { duration: 800, easing: cubicOut });
+const infoCount = new Tween(0, { duration: 800, easing: cubicOut });
 
-  async function fetchStats() {
-    try {
-      const { data, error } = await api.aspirasi.stats.get();
-      if (!error && data?.success) {
-        const stats = data.data;
-        totalCount.set(stats.total);
-        urgentCount.set(stats.urgent);
-        midCount.set(stats.mid);
-        infoCount.set(stats.info);
-      }
-    } catch (err) {
-      console.error("Failed to fetch stats:", err);
-    }
-  }
+async function fetchStats() {
+	try {
+		const { data, error } = await api.aspirasi.stats.get();
+		if (!error && data?.success) {
+			const stats = data.data;
+			totalCount.set(stats.total);
+			urgentCount.set(stats.urgent);
+			midCount.set(stats.mid);
+			infoCount.set(stats.info);
+		}
+	} catch (err) {
+		console.error("Failed to fetch stats:", err);
+	}
+}
 
-  onMount(() => {
-    fetchStats();
-    
-    let interval: ReturnType<typeof setInterval>;
+onMount(() => {
+	fetchStats();
 
-    const startInterval = () => {
-      stopInterval();
-      interval = setInterval(fetchStats, 5000);
-    };
+	let interval: ReturnType<typeof setInterval>;
 
-    const stopInterval = () => {
-      if (interval) clearInterval(interval);
-    };
+	const startInterval = () => {
+		stopInterval();
+		interval = setInterval(fetchStats, 5000);
+	};
 
-    const handleVisibilityChange = () => {
-      if (document.visibilityState === "visible") {
-        fetchStats();
-        startInterval();
-      } else {
-        stopInterval();
-      }
-    };
+	const stopInterval = () => {
+		if (interval) clearInterval(interval);
+	};
 
-    document.addEventListener("visibilitychange", handleVisibilityChange);
-    startInterval();
+	const handleVisibilityChange = () => {
+		if (document.visibilityState === "visible") {
+			fetchStats();
+			startInterval();
+		} else {
+			stopInterval();
+		}
+	};
 
-    return () => {
-      stopInterval();
-      document.removeEventListener("visibilitychange", handleVisibilityChange);
-    };
-  });
+	document.addEventListener("visibilitychange", handleVisibilityChange);
+	startInterval();
+
+	return () => {
+		stopInterval();
+		document.removeEventListener("visibilitychange", handleVisibilityChange);
+	};
+});
 </script>
 
 <section class="container mx-auto px-4 sm:px-6 py-8 sm:py-10 md:py-12">

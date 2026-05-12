@@ -5,29 +5,28 @@ export default new Elysia({
 	detail: {
 		tags: ["Misc"],
 	},
-})
-	.get(
-		"/keys",
-		async ({ query }) => {
-			const { secret } = query;
+}).get(
+	"/keys",
+	async ({ query }) => {
+		const { secret } = query;
 
-			if (secret !== import.meta.env.ADMIN_PASSWORD) {
-				return {
-					success: false,
-					message: "Secret tidak valid",
-				};
-			}
-
+		if (secret !== import.meta.env.ADMIN_PASSWORD) {
 			return {
-				success: true,
-				data: {
-					key: import.meta.env.ADMIN_XKEY,
-				},
+				success: false,
+				message: "Secret tidak valid",
 			};
-		},
-		{
-			query: t.Object({
-				secret: t.String(),
-			}),
-		},
-	);
+		}
+
+		return {
+			success: true,
+			data: {
+				key: import.meta.env.ADMIN_XKEY,
+			},
+		};
+	},
+	{
+		query: t.Object({
+			secret: t.String(),
+		}),
+	},
+);

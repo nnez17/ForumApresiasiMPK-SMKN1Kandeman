@@ -1,8 +1,8 @@
 import { openapi } from "@elysia/openapi";
 import { Elysia, redirect } from "elysia";
 import aspirasi from "./aspirasi";
-import news from "./news";
 import misc from "./misc";
+import news from "./news";
 
 export const app = new Elysia({ prefix: "/api" })
 	.use(
