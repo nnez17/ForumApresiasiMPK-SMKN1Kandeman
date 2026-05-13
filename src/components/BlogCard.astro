@@ -1,7 +1,7 @@
 ---
+import { createMarkdownProcessor } from "@astrojs/markdown-remark";
 import { ArrowRight, Clock, Newspaper, User } from "@lucide/astro";
 import type { NewsItem } from "@/data/News";
-import { createMarkdownProcessor } from "@astrojs/markdown-remark";
 
 interface Props {
 	news: NewsItem;
@@ -78,6 +78,10 @@ function highlightText(text: string, query: string) {
   .prose-excerpt :global(p) {
     margin: 0;
     display: inline;
+  }
+
+  .prose-excerpt :global(img) {
+    display: none;
   }
 
   .prose-excerpt :global(h1),
