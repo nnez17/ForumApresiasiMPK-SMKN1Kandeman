@@ -15,15 +15,8 @@ import Edit from "@lucide/svelte/icons/edit";
 import MessageSquare from "@lucide/svelte/icons/message-square";
 import Newspaper from "@lucide/svelte/icons/newspaper";
 import Plus from "@lucide/svelte/icons/plus";
-import EyeOff from "@lucide/svelte/icons/eye-off";
-import ImageUp from "@lucide/svelte/icons/image-up";
-import Send from "@lucide/svelte/icons/send";
-import UserPlus from "@lucide/svelte/icons/user-plus";
-import Users from "@lucide/svelte/icons/users";
-import Key from "@lucide/svelte/icons/key";
 import LogOut from "@lucide/svelte/icons/log-out";
-import Calendar from "@lucide/svelte/icons/calendar";
-import User from "@lucide/svelte/icons/user";
+import ShieldCheck from "@lucide/svelte/icons/shield-check";
 
 import snarkdown from "snarkdown";
 import { onMount } from "svelte";
@@ -69,6 +62,8 @@ let isSubmitting = $state(false);
 let kategori = $state("berita");
 let editingId = $state<string | null>(null);
 let imagePreview = $state("");
+let selectedFile = $state<File | null>(null);
+let isPreviewMode = $state(false);
 
 // Data State
 let aspirations: any[] = $state([]);
@@ -78,7 +73,6 @@ let newsList: any[] = $state([]);
 let form = $state({
 	title: "",
 	excerpt: "",
-	content: "",
 	author: "",
 	category: "Berita",
 	image: "",
@@ -210,8 +204,6 @@ function applyShortcut(type: "bold" | "italic" | "link" | "list" | "heading") {
 			break;
 	}
 
-	form.content = text.substring(0, start) + replacement + text.substring(end);
-
 	setTimeout(() => {
 		textarea.focus();
 		const newStart = start + cursorOffset;
@@ -248,7 +240,6 @@ async function handlePublish(e: Event) {
 			author: form.author,
 			excerpt: form.excerpt,
 			category: kategori,
-			content: form.content,
 			image: form.image,
 		};
 
@@ -282,7 +273,6 @@ async function handlePublish(e: Event) {
 		form = {
 			title: "",
 			excerpt: "",
-			content: "",
 			author: "",
 			category: "Berita",
 			image: "",
@@ -316,7 +306,6 @@ function handleEditNews(news: any) {
 	form = {
 		title: news.title,
 		excerpt: news.excerpt || "",
-		content: news.content || "",
 		author: news.author || "",
 		category: news.category || "berita",
 		image: news.image || "",
@@ -338,7 +327,6 @@ function cancelEdit() {
 	form = {
 		title: "",
 		excerpt: "",
-		content: "",
 		author: "",
 		category: "berita",
 		image: "",
@@ -541,13 +529,13 @@ async function deleteNews(id: string) {
 
                                     {#if isPreviewMode}
                                         <div class="w-full px-6 py-6 rounded-xl bg-muted/50 border border-border min-h-[300px] prose prose-sm max-w-none prose-headings:text-foreground prose-p:text-muted-foreground prose-strong:text-foreground prose-li:text-muted-foreground">
-                                            {@html snarkdown(form.content || "*Belum ada konten...*")}
+                                            {@html snarkdown(form.excerpt|| "*Belum ada konten...*")}
                                         </div>
                                     {:else}
                                         <textarea 
                                             id="konten" 
                                             rows="12" 
-                                            bind:value={form.content} 
+                                            bind:value={form.excerpt} 
                                             onkeydown={handleKeydown}
                                             placeholder="Tulis konten berita lengkap menggunakan Markdown..." 
                                             class="w-full px-5 py-4 rounded-xl bg-muted border border-transparent focus:bg-background focus:border-primary focus:ring-2 focus:ring-primary/20 outline-none transition-all font-medium text-foreground leading-relaxed" 
