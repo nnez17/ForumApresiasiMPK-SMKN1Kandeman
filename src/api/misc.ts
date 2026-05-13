@@ -1,5 +1,5 @@
 import { del } from "@vercel/blob";
-import { handleUpload, type HandleUploadBody } from "@vercel/blob/client";
+import { type HandleUploadBody, handleUpload } from "@vercel/blob/client";
 import Elysia, { t } from "elysia";
 import admin from "./middleware/admin";
 

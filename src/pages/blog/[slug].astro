@@ -1,9 +1,9 @@
 ---
 import { app } from "@/api/elysia";
+import BlogPost from "@/components/BlogPost.astro";
+import Navbar from "@/components/Navbar.astro";
 import type { NewsItem } from "@/data/News";
 import Layout from "@/layouts/Layout.astro";
-import Navbar from "@/components/Navbar.astro";
-import BlogPost from "@/components/BlogPost.astro";
 
 const { slug } = Astro.params;
 

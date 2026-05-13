@@ -1,13 +1,17 @@
 ---
-import { User, ChevronLeft, Calendar, Newspaper } from "@lucide/astro";
+import { createMarkdownProcessor } from "@astrojs/markdown-remark";
+import { Calendar, ChevronLeft, Newspaper, User } from "@lucide/astro";
 import type { NewsItem } from "@/data/News";
-import snarkdown from "snarkdown";
 
 interface Props {
 	news: NewsItem;
 }
 
 const { news } = Astro.props;
+
+// Use Astro's built-in markdown processor
+const processor = await createMarkdownProcessor();
+const { code: contentHtml } = await processor.render(news.excerpt);
 ---
 
 <div class="container mx-auto px-4 py-12 max-w-4xl">
@@ -48,7 +52,7 @@ const { news } = Astro.props;
     </div>
 
     <!-- Content -->
-    <div class="prose-archive max-w-none" set:html={snarkdown(news.excerpt)}>
+    <div class="prose-archive max-w-none" set:html={contentHtml}>
     </div>
 
     <!-- Back Button -->

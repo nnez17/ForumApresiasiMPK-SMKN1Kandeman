@@ -1,5 +1,5 @@
 ---
-import { ArrowRight, Clock, User, Newspaper } from "@lucide/astro";
+import { ArrowRight, Clock, Newspaper, User } from "@lucide/astro";
 import type { NewsItem } from "@/data/News";
 
 interface Props {
@@ -11,15 +11,17 @@ const { news, searchQuery = "" } = Astro.props;
 
 function highlightText(text: string, query: string) {
 	if (!query) return text;
-    // Escape text to prevent XSS since we're using set:html
-    const safeText = text
-        .replace(/&/g, "&amp;")
-        .replace(/</g, "&lt;")
-        .replace(/>/g, "&gt;")
-        .replace(/"/g, "&quot;")
-        .replace(/'/g, "&#039;");
-        
-	const parts = safeText.split(new RegExp(`(${query.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')})`, "gi"));
+	// Escape text to prevent XSS since we're using set:html
+	const safeText = text
+		.replace(/&/g, "&amp;")
+		.replace(/</g, "&lt;")
+		.replace(/>/g, "&gt;")
+		.replace(/"/g, "&quot;")
+		.replace(/'/g, "&#039;");
+
+	const parts = safeText.split(
+		new RegExp(`(${query.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")})`, "gi"),
+	);
 	return parts
 		.map((part) =>
 			part.toLowerCase() === query.toLowerCase()

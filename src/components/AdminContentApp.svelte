@@ -1,30 +1,28 @@
 <script lang="ts">
-import ChevronRight from "@lucide/svelte/icons/chevron-right";
 import Bold from "@lucide/svelte/icons/bold";
+import ChevronRight from "@lucide/svelte/icons/chevron-right";
+import Edit from "@lucide/svelte/icons/edit";
+import Eye from "@lucide/svelte/icons/eye";
+import Heading from "@lucide/svelte/icons/heading";
 import Italic from "@lucide/svelte/icons/italic";
 import LinkIcon from "@lucide/svelte/icons/link";
 import List from "@lucide/svelte/icons/list";
-import Heading from "@lucide/svelte/icons/heading";
-import Eye from "@lucide/svelte/icons/eye";
-import Type from "@lucide/svelte/icons/type";
-import Trash2 from "@lucide/svelte/icons/trash-2";
-import X from "@lucide/svelte/icons/x";
-import Save from "@lucide/svelte/icons/save";
 import Loader2 from "@lucide/svelte/icons/loader-2";
-import Edit from "@lucide/svelte/icons/edit";
+import LogOut from "@lucide/svelte/icons/log-out";
 import MessageSquare from "@lucide/svelte/icons/message-square";
 import Newspaper from "@lucide/svelte/icons/newspaper";
 import Plus from "@lucide/svelte/icons/plus";
-import LogOut from "@lucide/svelte/icons/log-out";
+import Save from "@lucide/svelte/icons/save";
 import ShieldCheck from "@lucide/svelte/icons/shield-check";
-
-import snarkdown from "snarkdown";
+import Trash2 from "@lucide/svelte/icons/trash-2";
+import Type from "@lucide/svelte/icons/type";
+import X from "@lucide/svelte/icons/x";
+import { upload } from "@vercel/blob/client";
+import { marked } from "marked";
 import { onMount } from "svelte";
 import { flip } from "svelte/animate";
-
 import * as Alert from "@/components/ui/alert/index.js";
 import { api } from "@/lib/eden";
-import { upload } from "@vercel/blob/client";
 
 // Auth State
 let isAuthenticated = $state(false);
@@ -524,7 +522,7 @@ async function deleteNews(id: string) {
 
                                     {#if isPreviewMode}
                                         <div class="w-full px-6 py-6 rounded-xl bg-muted/50 border border-border min-h-[300px] prose prose-sm max-w-none prose-headings:text-foreground prose-p:text-muted-foreground prose-strong:text-foreground prose-li:text-muted-foreground">
-                                            {@html snarkdown(form.excerpt|| "*Belum ada konten...*")}
+                                            {@html marked.parse(form.excerpt|| "*Belum ada konten...*")}
                                         </div>
                                     {:else}
                                         <textarea 
