@@ -174,7 +174,7 @@ function applyShortcut(type: "bold" | "italic" | "link" | "list" | "heading") {
 	const end = textarea.selectionEnd;
 	const text = textarea.value;
 	const selectedText = text.substring(start, end);
-	
+
 	let replacement = "";
 	let cursorOffset = 0;
 	let selectionLength = selectedText.length;
@@ -190,7 +190,10 @@ function applyShortcut(type: "bold" | "italic" | "link" | "list" | "heading") {
 			return true;
 		}
 		// Case 2: Cursor/Selection is inside a wrapper: **[text]**
-		if (text.slice(start - prefix.length, start) === prefix && text.slice(end, end + suffix.length) === suffix) {
+		if (
+			text.slice(start - prefix.length, start) === prefix &&
+			text.slice(end, end + suffix.length) === suffix
+		) {
 			newStart = start - prefix.length;
 			newEnd = end + suffix.length;
 			replacement = selectedText;
@@ -247,7 +250,8 @@ function applyShortcut(type: "bold" | "italic" | "link" | "list" | "heading") {
 			break;
 	}
 
-	const newText = text.substring(0, newStart) + replacement + text.substring(newEnd);
+	const newText =
+		text.substring(0, newStart) + replacement + text.substring(newEnd);
 	form.excerpt = newText;
 
 	setTimeout(() => {
@@ -773,3 +777,29 @@ async function deleteNews(id: string) {
 		</div>
 	</main>
 {/if}
+
+<style>
+	:global(.prose ul) {
+		list-style-type: disc !important;
+		list-style-position: outside !important;
+		padding-left: 2rem !important;
+		margin-top: 0.5rem !important;
+		margin-bottom: 0.5rem !important;
+	}
+	:global(.prose ol) {
+		list-style-type: decimal !important;
+		list-style-position: outside !important;
+		padding-left: 2rem !important;
+		margin-top: 0.5rem !important;
+		margin-bottom: 0.5rem !important;
+	}
+	:global(.prose li) {
+		margin-bottom: 0.25rem !important;
+		display: list-item !important;
+	}
+	:global(.prose ul ul, .prose ol ol, .prose ul ol, .prose ol ul) {
+		margin-top: 0.25rem !important;
+		margin-bottom: 0.25rem !important;
+		padding-left: 1.5rem !important;
+	}
+</style>

@@ -1,7 +1,7 @@
 ---
 import { createMarkdownProcessor } from "@astrojs/markdown-remark";
-import { Calendar, ChevronLeft, Newspaper, User } from "@lucide/astro";
-import type { NewsItem } from "@/data/News";
+import { ChevronLeft, Clock, Newspaper, User } from "@lucide/astro";
+import type { NewsItem } from "../data/News";
 
 interface Props {
 	news: NewsItem;
@@ -9,22 +9,23 @@ interface Props {
 
 const { news } = Astro.props;
 
-// Use Astro's built-in markdown processor
+// Process markdown content
 const processor = await createMarkdownProcessor();
 const { code: contentHtml } = await processor.render(news.excerpt);
 ---
 
-<div class="container mx-auto px-4 py-12 max-w-4xl">
+<div class="max-w-4xl mx-auto px-4 sm:px-6 py-12">
     <!-- Header -->
     <div class="mb-8">
-        <h1 class="text-3xl md:text-4xl font-black text-gray-900 leading-tight mb-4 uppercase tracking-tight">
+        <div class="flex items-center gap-2 text-primary font-bold text-xs uppercase tracking-widest mb-4">
+            <span class="bg-primary/10 px-3 py-1 rounded-full">{news.category || 'Berita'}</span>
+        </div>
+        <h1 class="text-3xl sm:text-4xl md:text-5xl font-black text-gray-900 leading-tight mb-6">
             {news.title}
         </h1>
-
-        <!-- Meta -->
-        <div class="flex flex-wrap gap-4 text-[10px] sm:text-xs text-gray-500 items-center font-medium">
+        <div class="flex flex-wrap items-center gap-4 text-sm text-gray-500 font-medium">
             <span class="flex items-center gap-1.5">
-                <Calendar class="w-3.5 h-3.5 text-gray-400" /> 
+                <Clock class="w-3.5 h-3.5 text-gray-400" /> 
                 {news.date}
             </span>
             <span class="-ml-2 -mr-2">|</span>
@@ -96,23 +97,32 @@ const { code: contentHtml } = await processor.render(news.excerpt);
         color: #111827;
     }
     
-    .prose-archive :global(ul), .prose-archive :global(ol) {
+    .prose-archive :global(ul) {
         margin-bottom: 1.5rem;
-        padding-left: 1.25rem;
+        padding-left: 2rem !important;
+        list-style-type: disc !important;
+        list-style-position: outside !important;
+    }
+
+    .prose-archive :global(ol) {
+        margin-bottom: 1.5rem;
+        padding-left: 2rem !important;
+        list-style-type: decimal !important;
+        list-style-position: outside !important;
+    }
+
+    .prose-archive :global(ul ul), 
+    .prose-archive :global(ol ol),
+    .prose-archive :global(ul ol),
+    .prose-archive :global(ol ul) {
+        margin-top: 0.5rem;
+        margin-bottom: 0;
+        padding-left: 1.5rem !important;
     }
     
     .prose-archive :global(li) {
         margin-bottom: 0.5rem;
-        position: relative;
-    }
-
-    .prose-archive :global(ul li::before) {
-        content: "•";
-        color: var(--color-primary);
-        font-weight: bold;
-        display: inline-block; 
-        width: 1em;
-        margin-left: -1em;
+        display: list-item !important;
     }
     
     .prose-archive :global(strong) {
