@@ -28,7 +28,7 @@ let {
             <Sidebar.MenuItem>
               <Sidebar.MenuButton 
                 size="lg" 
-                class="h-14 px-4 rounded-xl text-base font-bold transition-all hover:bg-primary/10"
+                class="h-14 px-4 text-base font-bold"
               >
                 <SidebarCloseLink href={link.href} name={link.name} />
               </Sidebar.MenuButton>

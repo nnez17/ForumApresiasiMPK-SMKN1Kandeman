@@ -83,24 +83,6 @@ onMount(() => {
 		isAuthenticated = true;
 		fetchData();
 	}
-
-	const sections = document.querySelectorAll("section[id]");
-	const observer = new IntersectionObserver(
-		(entries) => {
-			for (const entry of entries) {
-				if (entry.isIntersecting) {
-					activeSection = entry.target.id;
-				}
-			}
-		},
-		{ rootMargin: "-30% 0px -60% 0px" },
-	);
-
-	for (const section of sections) {
-		observer.observe(section);
-	}
-
-	return () => observer.disconnect();
 });
 
 async function handleLogin(e: Event) {
@@ -367,11 +349,14 @@ function handleEditNews(news: any) {
 			: "info";
 	imagePreview = news.image || "";
 
-	const formSection = document.getElementById("publish-content");
-	formSection?.scrollIntoView({ behavior: "smooth" });
+	activeSection = "publish-content";
+	setTimeout(() => {
+		window.scrollTo({ top: 0, behavior: "smooth" });
+	}, 0);
 }
 
 function cancelEdit() {
+	activeSection = "manage-news";
 	editingId = null;
 	imagePreview = "";
 	form = {
@@ -382,6 +367,9 @@ function cancelEdit() {
 		image: "",
 	};
 	selectedFile = null;
+	setTimeout(() => {
+		window.scrollTo({ top: 0, behavior: "smooth" });
+	}, 0);
 }
 
 async function deleteNews(id: string) {
@@ -415,7 +403,7 @@ async function deleteNews(id: string) {
 </script>
 
 <!-- Toast Container -->
-<div class="fixed top-24 right-6 z-100 w-full max-w-sm space-y-3 pointer-events-none">
+<div class="fixed top-20 left-4 right-4 md:top-24 md:left-auto md:right-6 z-100 w-[calc(100%-2rem)] md:w-full md:max-w-sm space-y-3 pointer-events-none mx-auto md:mx-0">
 	{#each toastAlerts as alert (alert.id)}
 		<div animate:flip={{ duration: 300 }} class="pointer-events-auto">
 			<Alert.Root variant={alert.variant} class="shadow-2xl border-none backdrop-blur-md bg-background/95 ring-1 ring-border relative group">
@@ -476,49 +464,50 @@ async function deleteNews(id: string) {
 						<ShieldCheck class="w-4 h-4" />
 						Administrator Panel
 					</div>
-					<h1 class="text-4xl md:text-5xl font-black text-foreground tracking-tight">
+					<h1 class="text-3xl md:text-5xl font-black text-foreground tracking-tight">
 						Kelola <span class="text-primary">Konten</span>
 					</h1>
 				</div>
 				<button
 					onclick={handleLogout}
-					class="flex items-center gap-2 text-destructive hover:bg-destructive/10 px-4 py-2 rounded-lg transition-colors font-bold text-sm"
+					class="flex items-center justify-center gap-2 text-destructive hover:bg-destructive/10 bg-destructive/5 md:bg-transparent w-full md:w-auto px-4 py-3 md:py-2 rounded-xl md:rounded-lg transition-colors font-bold text-sm shrink-0"
 				>
 					<LogOut class="w-4 h-4" />
 					Logout
 				</button>
 			</div>
 
-			<div class="flex flex-col lg:flex-row gap-12">
-				<div class="w-full lg:w-64 shrink-0">
-					<nav class="sticky top-28 space-y-2">
+			<div class="flex flex-col md:flex-row gap-8 md:gap-12">
+				<div class="w-full md:w-64 shrink-0">
+					<nav class="flex flex-col md:sticky md:top-28 gap-2">
 						<button
 							onclick={() => activeSection = "publish-content"}
 							class={`w-full flex items-center gap-3 px-4 py-3 rounded-xl font-bold transition-all ${activeSection === "publish-content" ? "bg-primary/10 text-primary" : "text-muted-foreground hover:text-foreground hover:bg-muted"}`}
 						>
 							<Newspaper class="w-5 h-5" />
-							Publish Konten
+							<span>Publish Konten</span>
 						</button>
 						<button
 							onclick={() => activeSection = "manage-news"}
 							class={`w-full flex items-center gap-3 px-4 py-3 rounded-xl font-bold transition-all ${activeSection === "manage-news" ? "bg-primary/10 text-primary" : "text-muted-foreground hover:text-foreground hover:bg-muted"}`}
 						>
 							<Edit class="w-5 h-5" />
-							Daftar Berita
+							<span>Daftar Berita</span>
 						</button>
 						<button
 							onclick={() => activeSection = "aspirasi"}
 							class={`w-full flex items-center gap-3 px-4 py-3 rounded-xl font-bold transition-all ${activeSection === "aspirasi" ? "bg-primary/10 text-primary" : "text-muted-foreground hover:text-foreground hover:bg-muted"}`}
 						>
 							<MessageSquare class="w-5 h-5" />
-							Aspirasi Siswa
+							<span>Aspirasi Siswa</span>
 						</button>
 					</nav>
 				</div>
 
-				<div class="flex-1 space-y-20">
+				<div class="flex-1">
+					{#if activeSection === 'publish-content'}
 					<!-- Publish Konten -->
-					<section id="publish-content" class="scroll-mt-32">
+					<section id="publish-content">
 						<div class="mb-8">
 							<h2 class="text-2xl font-black text-foreground flex items-center gap-2">
 								<Plus class="w-6 h-6 text-primary" />
@@ -547,50 +536,50 @@ async function deleteNews(id: string) {
 									<input id="judul" type="text" bind:value={form.title} placeholder="Masukkan judul..." class="w-full px-5 py-3 rounded-xl bg-muted border border-transparent focus:bg-background focus:border-primary focus:ring-2 focus:ring-primary/20 outline-none transition-all font-medium text-foreground" required />
 								</div>
 
-                            {#if kategori === 'berita'}
-                                <div class="space-y-2 md:col-span-2">
-                                    <div class="flex items-center justify-between mb-1">
-                                        <label for="konten" class="text-sm font-bold text-foreground">Isi Berita</label>
-                                        <div class="flex items-center gap-1 bg-muted p-1 rounded-lg">
-                                            <button type="button" onclick={() => applyShortcut('bold')} class="p-1.5 hover:bg-background rounded-md transition-colors" title="Bold (Ctrl+B)"><Bold class="w-3.5 h-3.5" /></button>
-                                            <button type="button" onclick={() => applyShortcut('italic')} class="p-1.5 hover:bg-background rounded-md transition-colors" title="Italic (Ctrl+I)"><Italic class="w-3.5 h-3.5" /></button>
-                                            <button type="button" onclick={() => applyShortcut('link')} class="p-1.5 hover:bg-background rounded-md transition-colors" title="Link (Ctrl+K)"><LinkIcon class="w-3.5 h-3.5" /></button>
-                                            <button type="button" onclick={() => applyShortcut('list')} class="p-1.5 hover:bg-background rounded-md transition-colors" title="List"><List class="w-3.5 h-3.5" /></button>
-                                            <button type="button" onclick={() => applyShortcut('heading')} class="p-1.5 hover:bg-background rounded-md transition-colors" title="Heading"><Heading class="w-3.5 h-3.5" /></button>
-                                            <div class="w-px h-4 bg-border mx-1"></div>
-                                            <button 
-                                                type="button" 
-                                                onclick={() => isPreviewMode = !isPreviewMode} 
-                                                class={`flex items-center gap-1.5 px-2 py-1 rounded-md transition-all text-[10px] font-black uppercase tracking-wider ${isPreviewMode ? 'bg-primary text-primary-foreground' : 'hover:bg-background text-muted-foreground'}`}
-                                            >
-                                                {#if isPreviewMode}
-                                                    <Type class="w-3 h-3" /> Editor
-                                                {:else}
-                                                    <Eye class="w-3 h-3" /> Preview
-                                                {/if}
-                                            </button>
-                                        </div>
-                                    </div>
+                {#if kategori === 'berita'}
+                <div class="space-y-2 md:col-span-2">
+                    <div class="flex flex-col sm:flex-row sm:items-center justify-between mb-1 gap-2">
+                        <label for="konten" class="text-sm font-bold text-foreground">Isi Berita</label>
+                        <div class="flex items-center gap-1 bg-muted p-1 rounded-lg overflow-x-auto no-scrollbar w-full sm:w-auto shrink-0">
+                            <button type="button" onclick={() => applyShortcut('bold')} class="p-1.5 hover:bg-background rounded-md transition-colors shrink-0" title="Bold (Ctrl+B)"><Bold class="w-3.5 h-3.5" /></button>
+                            <button type="button" onclick={() => applyShortcut('italic')} class="p-1.5 hover:bg-background rounded-md transition-colors shrink-0" title="Italic (Ctrl+I)"><Italic class="w-3.5 h-3.5" /></button>
+                            <button type="button" onclick={() => applyShortcut('link')} class="p-1.5 hover:bg-background rounded-md transition-colors shrink-0" title="Link (Ctrl+K)"><LinkIcon class="w-3.5 h-3.5" /></button>
+                            <button type="button" onclick={() => applyShortcut('list')} class="p-1.5 hover:bg-background rounded-md transition-colors shrink-0" title="List"><List class="w-3.5 h-3.5" /></button>
+                            <button type="button" onclick={() => applyShortcut('heading')} class="p-1.5 hover:bg-background rounded-md transition-colors shrink-0" title="Heading"><Heading class="w-3.5 h-3.5" /></button>
+                            <div class="w-px h-4 bg-border mx-1 shrink-0"></div>
+                            <button 
+                                type="button" 
+                                onclick={() => isPreviewMode = !isPreviewMode} 
+                                class={`flex items-center gap-1.5 px-2 py-1 rounded-md transition-all text-[10px] font-black uppercase tracking-wider shrink-0 ${isPreviewMode ? 'bg-primary text-primary-foreground' : 'hover:bg-background text-muted-foreground'}`}
+                            >
+                                {#if isPreviewMode}
+                                    <Type class="w-3 h-3" /> Editor
+                                {:else}
+                                    <Eye class="w-3 h-3" /> Preview
+                                {/if}
+                            </button>
+                        </div>
+                    </div>
 
-                                    {#if isPreviewMode}
-                                        <div class="w-full px-6 py-6 rounded-xl bg-muted/50 border border-border min-h-[300px] prose prose-sm max-w-none prose-headings:text-foreground prose-p:text-muted-foreground prose-strong:text-foreground prose-li:text-muted-foreground">
-                                            {@html marked.parse(form.excerpt|| "*Belum ada konten...*")}
-                                        </div>
-                                    {:else}
-                                        <textarea 
-                                            id="konten" 
-                                            rows="12" 
-                                            bind:value={form.excerpt} 
-                                            onkeydown={handleKeydown}
-                                            placeholder="Tulis konten berita lengkap..." 
-                                            class="w-full px-5 py-4 rounded-xl bg-muted border border-transparent focus:bg-background focus:border-primary focus:ring-2 focus:ring-primary/20 outline-none transition-all font-medium text-foreground leading-relaxed" 
-                                            required
-                                        ></textarea>
-                                    {/if}
-                                    <p class="text-[10px] text-muted-foreground mt-1 font-medium italic">
-																			<a href="https://www.markdownguide.org/" target="_blank" rel="noopener noreferrer" class="underline">Markdown</a> didukung.
-																		</p>
-                                </div>
+                {#if isPreviewMode}
+                    <div class="w-full px-6 py-6 rounded-xl bg-muted/50 border border-border min-h-[300px] prose prose-sm max-w-none prose-headings:text-foreground prose-p:text-muted-foreground prose-strong:text-foreground prose-li:text-muted-foreground">
+                        {@html marked.parse(form.excerpt|| "*Belum ada konten...*")}
+                    </div>
+                {:else}
+                    <textarea 
+                        id="konten" 
+                        rows="12" 
+                        bind:value={form.excerpt} 
+                        onkeydown={handleKeydown}
+                        placeholder="Tulis konten berita lengkap..." 
+                        class="w-full px-5 py-4 rounded-xl bg-muted border border-transparent focus:bg-background focus:border-primary focus:ring-2 focus:ring-primary/20 outline-none transition-all font-medium text-foreground leading-relaxed" 
+                        required
+                    ></textarea>
+                {/if}
+                <p class="text-[10px] text-muted-foreground mt-1 font-medium italic">
+                    <a href="https://www.markdownguide.org/" target="_blank" rel="noopener noreferrer" class="underline">Markdown</a> didukung.
+                </p>
+                </div>
 
 									<div class="space-y-2 md:col-span-2">
 										<label for="penulis" class="text-sm font-bold text-foreground">Nama Penulis</label>
@@ -627,8 +616,8 @@ async function deleteNews(id: string) {
 								{/if}
 							</div>
 
-							<div class="pt-4 flex gap-3">
-								<button type="submit" class="px-8 py-3 rounded-xl bg-primary text-primary-foreground font-bold hover:bg-primary/90 transition-all shadow-lg shadow-primary/20 flex items-center gap-2" disabled={isSubmitting}>
+							<div class="pt-4 flex flex-col sm:flex-row gap-3">
+								<button type="submit" class="w-full sm:w-auto px-8 py-3 rounded-xl bg-primary text-primary-foreground font-bold hover:bg-primary/90 transition-all shadow-lg shadow-primary/20 flex items-center justify-center gap-2" disabled={isSubmitting}>
 									{#if isSubmitting}
 										<Loader2 class="w-5 h-5 animate-spin" />
 										Sedang Memproses...
@@ -642,7 +631,7 @@ async function deleteNews(id: string) {
 									<button 
 										type="button" 
 										onclick={cancelEdit}
-										class="px-8 py-3 rounded-xl bg-muted text-foreground font-bold hover:bg-muted/80 transition-all"
+										class="w-full sm:w-auto px-8 py-3 rounded-xl bg-muted text-foreground font-bold hover:bg-muted/80 transition-all flex items-center justify-center"
 									>
 										Batal
 									</button>
@@ -650,9 +639,11 @@ async function deleteNews(id: string) {
 							</div>
 						</form>
 					</section>
+					{/if}
 
+					{#if activeSection === 'manage-news'}
 					<!-- Manage News -->
-					<section id="manage-news" class="scroll-mt-32">
+					<section id="manage-news">
 						<div class="mb-8">
 							<h2 class="text-2xl font-black text-foreground flex items-center gap-2">
 								<Newspaper class="w-6 h-6 text-primary" />
@@ -670,20 +661,22 @@ async function deleteNews(id: string) {
 								<table class="w-full text-left border-collapse">
 									<thead>
 										<tr class="border-b-2 border-border">
-											<th class="py-4 pr-4 text-xs font-black text-muted-foreground uppercase tracking-widest">Judul</th>
-											<th class="py-4 px-4 text-xs font-black text-muted-foreground uppercase tracking-widest">Kategori</th>
-											<th class="py-4 px-4 text-xs font-black text-muted-foreground uppercase tracking-widest">Tanggal</th>
-											<th class="py-4 pl-4 text-xs font-black text-muted-foreground uppercase tracking-widest text-right">Aksi</th>
+											<th class="py-4 pr-4 text-xs font-black text-muted-foreground uppercase tracking-widest whitespace-nowrap">Judul</th>
+											<th class="py-4 px-4 text-xs font-black text-muted-foreground uppercase tracking-widest whitespace-nowrap hidden sm:table-cell">Kategori</th>
+											<th class="py-4 px-4 text-xs font-black text-muted-foreground uppercase tracking-widest whitespace-nowrap hidden md:table-cell">Tanggal</th>
+											<th class="py-4 pl-4 text-xs font-black text-muted-foreground uppercase tracking-widest text-right whitespace-nowrap">Aksi</th>
 										</tr>
 									</thead>
 									<tbody class="divide-y divide-border">
 										{#each newsList as news}
 											<tr class="hover:bg-muted/50 transition-colors group">
 												<td class="py-4 pr-4">
-													<div class="font-bold text-foreground line-clamp-1">{news.title}</div>
+													<div class="font-bold text-foreground line-clamp-2 md:line-clamp-1 min-w-[150px]">{news.title}</div>
+													<div class="text-[10px] font-bold text-muted-foreground uppercase tracking-wider mt-1 sm:hidden">{news.category} • {news.date}</div>
+													<div class="text-[10px] font-bold text-muted-foreground uppercase tracking-wider mt-1 hidden sm:block md:hidden">{news.date}</div>
 												</td>
-												<td class="py-4 px-4 text-sm text-muted-foreground">{news.category.toUpperCase()}</td>
-												<td class="py-4 px-4 text-sm text-muted-foreground">{news.date}</td>
+												<td class="py-4 px-4 text-sm text-muted-foreground hidden sm:table-cell">{news.category.toUpperCase()}</td>
+												<td class="py-4 px-4 text-sm text-muted-foreground hidden md:table-cell">{news.date}</td>
 												<td class="py-4 pl-4 text-right">
 													<div class="flex items-center justify-end gap-2">
 														<button
@@ -709,9 +702,11 @@ async function deleteNews(id: string) {
 							</div>
 						{/if}
 					</section>
+					{/if}
 
+					{#if activeSection === 'aspirasi'}
 					<!-- Aspirasi -->
-					<section id="aspirasi" class="scroll-mt-32">
+					<section id="aspirasi">
 						<div class="mb-8">
 							<h2 class="text-2xl font-black text-foreground flex items-center gap-2">
 								<MessageSquare class="w-6 h-6 text-primary" />
@@ -730,9 +725,10 @@ async function deleteNews(id: string) {
 								<table class="w-full text-left border-collapse">
 									<thead>
 										<tr class="border-b-2 border-border">
-											<th class="py-4 pr-4 text-xs font-black text-muted-foreground uppercase tracking-widest">Siswa</th>
-											<th class="py-4 px-4 text-xs font-black text-muted-foreground uppercase tracking-widest">Pesan</th>
-											<th class="py-4 px-4 text-xs font-black text-muted-foreground uppercase tracking-widest text-right">Status</th>
+											<th class="py-4 pr-4 text-xs font-black text-muted-foreground uppercase tracking-widest whitespace-nowrap">Siswa</th>
+											<th class="py-4 px-4 text-xs font-black text-muted-foreground uppercase tracking-widest hidden sm:table-cell">Pesan</th>
+											<th class="py-4 px-4 text-xs font-black text-muted-foreground uppercase tracking-widest text-center whitespace-nowrap hidden md:table-cell">Status</th>
+											<th class="py-4 px-4 text-xs font-black text-muted-foreground uppercase tracking-widest text-right whitespace-nowrap">Bukti</th>
 										</tr>
 									</thead>
 									<tbody class="divide-y divide-border">
@@ -743,11 +739,38 @@ async function deleteNews(id: string) {
 													<div class="text-[10px] text-muted-foreground font-bold uppercase tracking-wider">
 														{item.class}
 													</div>
+													<div class="mt-2 sm:hidden">
+														<span
+															class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-widest whitespace-nowrap 
+															{item.status?.includes('Darurat') ? 'bg-red-500/10 text-red-600' : 
+															 item.status?.includes('Sedang') ? 'bg-amber-500/10 text-amber-600' : 
+															 item.status?.includes('Informasi') ? 'bg-blue-500/10 text-blue-600' : 
+															 'bg-muted text-muted-foreground'}"
+														>
+															<span class="w-1.5 h-1.5 rounded-full bg-current"></span>
+															{item.status?.split(' ')[0] || "Pending"}
+														</span>
+													</div>
+													<div class="mt-2 text-xs text-muted-foreground sm:hidden line-clamp-2">
+														{item.content}
+													</div>
 												</td>
-												<td class="py-4 px-4 text-sm text-muted-foreground max-w-[200px] md:max-w-[300px]">
+												<td class="py-4 px-4 text-sm text-muted-foreground max-w-[200px] md:max-w-[300px] hidden sm:table-cell">
 													<p class="truncate">{item.content}</p>
+													<div class="mt-2 md:hidden">
+														<span
+															class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-widest whitespace-nowrap 
+															{item.status?.includes('Darurat') ? 'bg-red-500/10 text-red-600' : 
+															 item.status?.includes('Sedang') ? 'bg-amber-500/10 text-amber-600' : 
+															 item.status?.includes('Informasi') ? 'bg-blue-500/10 text-blue-600' : 
+															 'bg-muted text-muted-foreground'}"
+														>
+															<span class="w-1.5 h-1.5 rounded-full bg-current"></span>
+															{item.status?.split(' ')[0] || "Pending"}
+														</span>
+													</div>
 												</td>
-												<td class="py-4 px-4 text-right">
+												<td class="py-4 px-4 text-center hidden md:table-cell">
 													<span
 														class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-widest whitespace-nowrap 
 														{item.status?.includes('Darurat') ? 'bg-red-500/10 text-red-600' : 
@@ -758,6 +781,16 @@ async function deleteNews(id: string) {
 														<span class="w-1.5 h-1.5 rounded-full bg-current"></span>
 														{item.status?.split(' ')[0] || "Pending"}
 													</span>
+												</td>
+												<td class="py-4 px-4 text-right">
+													{#if item.proof}
+														<a href={item.proof} target="_blank" rel="noopener noreferrer" class="inline-flex items-center justify-center gap-1.5 px-3 py-1.5 rounded-lg bg-primary/10 text-primary hover:bg-primary hover:text-primary-foreground transition-colors text-xs font-bold whitespace-nowrap">
+															<LinkIcon class="w-3.5 h-3.5" />
+															<span class="hidden sm:inline">Lihat</span>
+														</a>
+													{:else}
+														<span class="text-[10px] text-muted-foreground font-bold uppercase tracking-widest px-2 whitespace-nowrap">Tidak Ada</span>
+													{/if}
 												</td>
 											</tr>
 										{/each}
@@ -772,6 +805,7 @@ async function deleteNews(id: string) {
 							</div>
 						{/if}
 					</section>
+					{/if}
 				</div>
 			</div>
 		</div>
@@ -779,6 +813,14 @@ async function deleteNews(id: string) {
 {/if}
 
 <style>
+	.no-scrollbar::-webkit-scrollbar {
+		display: none;
+	}
+	.no-scrollbar {
+		-ms-overflow-style: none;
+		scrollbar-width: none;
+	}
+
 	:global(.prose ul) {
 		list-style-type: disc !important;
 		list-style-position: outside !important;
