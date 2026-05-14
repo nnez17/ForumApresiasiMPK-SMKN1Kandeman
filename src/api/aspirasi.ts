@@ -40,7 +40,7 @@ export default new Elysia({
 		"/",
 		async () => {
 			const result = await sheets.spreadsheets.values.get({
-				spreadsheetId: "1ef9jf0dsJMIPVHouGG-DGKOKY26YqB1NJ0MSRy033bY",
+				spreadsheetId: import.meta.env.ASPIRASI_SHEET_ID,
 				range: "A2:G",
 			});
 			return {
@@ -54,7 +54,7 @@ export default new Elysia({
 					content: item[5],
 					proof: item[6],
 					timestamp: item[0],
-				})),
+				})) ?? [],
 			};
 		},
 		{
