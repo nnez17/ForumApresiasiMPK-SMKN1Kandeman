@@ -23,12 +23,15 @@ import { onMount } from "svelte";
 import { flip } from "svelte/animate";
 import * as Alert from "@/components/ui/alert/index.js";
 import { api } from "@/lib/eden";
+import * as AlertDialog from "@/components/ui/alert-dialog/index.ts";
 
 // Auth State
 let isAuthenticated = $state(false);
 let passwordInput = $state("");
 let isLoggingIn = $state(false);
 let apiKey = $state("");
+let isDeleteDialogOpen = $state(false);
+let newsToDeleteId = $state<string | null>(null);
 
 // Toast System
 let toastAlerts = $state<
@@ -380,8 +383,14 @@ function cancelEdit() {
 	}, 0);
 }
 
-async function deleteNews(id: string) {
-	if (!confirm("Yakin ingin menghapus berita ini?")) return;
+function confirmDelete(id: string) {
+	newsToDeleteId = id;
+	isDeleteDialogOpen = true;
+}
+
+async function deleteNews() {
+	if (!newsToDeleteId) return;
+	const id = newsToDeleteId;
 
 	try {
 		const newsItem = newsList.find((n) => n.id === id);
@@ -411,6 +420,9 @@ async function deleteNews(id: string) {
 		}
 	} catch (err) {
 		addToast("Error", "Terjadi kesalahan saat menghapus.", "destructive");
+	} finally {
+		isDeleteDialogOpen = false;
+		newsToDeleteId = null;
 	}
 }
 </script>
@@ -700,7 +712,7 @@ async function deleteNews(id: string) {
 															<Edit class="w-4 h-4" />
 														</button>
 														<button
-															onclick={() => deleteNews(news.id)}
+															onclick={() => confirmDelete(news.id)}
 															class="w-8 h-8 rounded-lg bg-destructive/10 text-destructive flex items-center justify-center hover:bg-destructive hover:text-white transition-colors"
 															title="Hapus"
 														>
@@ -824,6 +836,23 @@ async function deleteNews(id: string) {
 		</div>
 	</main>
 {/if}
+
+<AlertDialog.Root bind:open={isDeleteDialogOpen}>
+	<AlertDialog.Content>
+		<AlertDialog.Header>
+			<AlertDialog.Title>Hapus Konten Berita</AlertDialog.Title>
+			<AlertDialog.Description>
+				Yakin ingin menghapus berita ini?
+			</AlertDialog.Description>
+		</AlertDialog.Header>
+		<AlertDialog.Footer>
+			<AlertDialog.Cancel>Batal</AlertDialog.Cancel>
+			<AlertDialog.Action onclick={deleteNews} variant="destructive">
+				Hapus
+			</AlertDialog.Action>
+		</AlertDialog.Footer>
+	</AlertDialog.Content>
+</AlertDialog.Root>
 
 <style>
 	.no-scrollbar::-webkit-scrollbar {
