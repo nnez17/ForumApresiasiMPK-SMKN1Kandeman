@@ -4,6 +4,7 @@ import svelte from "@astrojs/svelte";
 import vercel from "@astrojs/vercel";
 import tailwindcss from "@tailwindcss/vite";
 import { defineConfig } from "astro/config";
+import path from "node:path";
 
 // https://astro.build/config
 export default defineConfig({
@@ -17,7 +18,7 @@ export default defineConfig({
 		},
 		resolve: {
 			alias: {
-				undici: "/src/lib/undici-shim.js",
+				undici: path.resolve("./src/lib/undici-shim.js"),
 			},
 		},
 	},
