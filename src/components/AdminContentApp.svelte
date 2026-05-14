@@ -634,7 +634,7 @@ async function deleteNews() {
 													onchange={handleFileChange}
 													class="w-full px-5 py-2.5 rounded-xl bg-muted border border-transparent focus:bg-background focus:border-primary focus:ring-2 focus:ring-primary/20 outline-none transition-all text-foreground file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-bold file:bg-primary file:text-primary-foreground hover:file:bg-primary/90 file:cursor-pointer cursor-pointer" 
 												/>
-												<p class="text-[10px] text-muted-foreground mt-2 font-medium italic">Format: JPG, PNG, WEBP. Maks 10MB.</p>
+												<p class="text-[10px] text-muted-foreground mt-2 font-medium italic">Format: JPG, PNG, WEBP, HEIC. Maks 10MB.</p>
 											</div>
 										</div>
 									</div>
