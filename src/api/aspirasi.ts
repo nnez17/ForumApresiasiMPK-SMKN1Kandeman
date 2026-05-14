@@ -10,7 +10,7 @@ export default new Elysia({
 })
 	.get("/stats", async () => {
 		const result = await sheets.spreadsheets.values.get({
-			spreadsheetId: "1ef9jf0dsJMIPVHouGG-DGKOKY26YqB1NJ0MSRy033bY",
+			spreadsheetId: import.meta.env.ASPIRASI_SHEET_ID,
 			range: "A2:G",
 		});
 		return {
