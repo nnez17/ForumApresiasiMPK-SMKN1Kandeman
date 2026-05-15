@@ -45,13 +45,13 @@ const commissions =
         />
         
         {/* Overlays */}
-        <div class="absolute inset-0 bg-linear-to-t from-black via-black/40 to-transparent opacity-80 z-10 transition-opacity duration-200"></div>
-        <div class={`komisi-color-overlay absolute inset-0 bg-linear-to-br ${komisi.color} to-transparent opacity-0 group-hover:opacity-40 z-20 transition-opacity duration-200`}></div>
+        <div class="absolute inset-0 bg-linear-to-t from-black via-black/40 to-transparent opacity-80 z-1 transition-opacity duration-200"></div>
+        <div class={`komisi-color-overlay absolute inset-0 bg-linear-to-br ${komisi.color} to-transparent opacity-0 group-hover:opacity-40 z-2 transition-opacity duration-200`}></div>
 
         {/* Content */}
         <div class="absolute inset-0 p-5 sm:p-6 md:p-8 lg:p-12 xl:p-16 flex flex-col justify-end">
           {/* Main Text */}
-          <div class="komisi-content relative z-10 transition-transform duration-500 group-hover:-translate-y-1">
+          <div class="komisi-content relative z-1 transition-transform duration-500 group-hover:-translate-y-1">
             <span class="text-primary font-black tracking-widest text-xs sm:text-sm uppercase block mb-2 sm:mb-3 md:mb-4">{komisi.title}</span>
             <h3 class="text-2xl sm:text-3xl md:text-4xl lg:text-5xl xl:text-6xl font-black text-white mb-1 sm:mb-2 uppercase leading-none tracking-tighter">
               {komisi.subtitle}

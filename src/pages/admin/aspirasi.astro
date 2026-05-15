@@ -1,0 +1,18 @@
+---
+import Footer from "@/components/layout/Footer.astro";
+import Navbar from "@/components/layout/Navbar.astro";
+import Layout from "@/layouts/Layout.astro";
+import AdminAspirasi from "@/components/admin/AdminAspirasi.svelte";
+---
+
+<Layout>
+	<Navbar isAdmin={true} />
+	<AdminAspirasi client:only="svelte" />
+	<Footer />
+</Layout>
+
+<style is:global>
+    html {
+        scroll-padding-top: 100px;
+    }
+</style>

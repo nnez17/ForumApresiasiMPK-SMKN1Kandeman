@@ -28,7 +28,7 @@ const administration = structureData?.executive?.administration || staticAdmin;
   <div class="absolute top-0 left-1/4 w-[300px] sm:w-[400px] lg:w-[500px] h-[300px] sm:h-[400px] lg:h-[500px] bg-primary/5 rounded-full pointer-events-none"></div>
   <div class="absolute bottom-0 right-1/4 w-[300px] sm:w-[400px] lg:w-[500px] h-[300px] sm:h-[400px] lg:h-[500px] bg-amber-500/5 rounded-full pointer-events-none"></div>
 
-  <div class="container mx-auto relative z-10">
+  <div class="container mx-auto relative z-1">
     <!-- Header -->
     <div class="text-center mb-12 sm:mb-16 md:mb-24 lg:mb-40">
       <h2 class="text-3xl sm:text-4xl md:text-5xl lg:text-6xl xl:text-7xl font-black text-white leading-[0.8] tracking-tighter uppercase mb-4 sm:mb-6 md:mb-8">
@@ -53,11 +53,11 @@ const administration = structureData?.executive?.administration || staticAdmin;
             />
             
             {/* Overlays */}
-            <div class="absolute inset-0 bg-linear-to-t from-black via-black/40 to-transparent opacity-80 z-10 transition-opacity duration-500 group-hover:opacity-70"></div>
-            <div class={`exec-color-overlay absolute inset-0 bg-linear-to-br ${leader.color} to-transparent opacity-0 group-hover:opacity-40 z-20 transition-all duration-500 mix-blend-overlay`}></div>
+            <div class="absolute inset-0 bg-linear-to-t from-black via-black/40 to-transparent opacity-80 z-1 transition-opacity duration-500 group-hover:opacity-70"></div>
+            <div class={`exec-color-overlay absolute inset-0 bg-linear-to-br ${leader.color} to-transparent opacity-0 group-hover:opacity-40 z-2 transition-all duration-500 mix-blend-overlay`}></div>
 
             {/* Content */}
-            <div class="absolute inset-0 p-6 sm:p-8 md:p-12 lg:p-20 flex flex-col justify-end z-30">
+            <div class="absolute inset-0 p-6 sm:p-8 md:p-12 lg:p-20 flex flex-col justify-end z-3">
               <div class="exec-content relative transition-transform duration-700 group-hover:-translate-y-2">
                 <span class="text-amber-500 font-black tracking-[0.3em] sm:tracking-[0.4em] text-xs sm:text-sm uppercase block mb-2 sm:mb-3 md:mb-4">{leader.role}</span>
                 <h3 class="text-2xl sm:text-3xl md:text-4xl lg:text-5xl xl:text-6xl font-black text-white uppercase tracking-tighter mb-2 sm:mb-3 md:mb-4 leading-[0.9] drop-shadow-2xl">
@@ -95,10 +95,10 @@ const administration = structureData?.executive?.administration || staticAdmin;
                     class="exec-img absolute inset-0 w-full h-full object-cover transition-transform duration-1000 group-hover:scale-110 scale-[1.02] no-drag"
                   />
                   
-                  <div class="absolute inset-0 bg-linear-to-t from-black via-black/40 to-transparent opacity-80 z-10 transition-opacity duration-500 group-hover:opacity-70"></div>
-                  <div class={`exec-color-overlay absolute inset-0 bg-linear-to-br ${member.color} to-transparent opacity-0 group-hover:opacity-40 z-20 transition-all duration-500 mix-blend-overlay`}></div>
+                  <div class="absolute inset-0 bg-linear-to-t from-black via-black/40 to-transparent opacity-80 z-1 transition-opacity duration-500 group-hover:opacity-70"></div>
+                  <div class={`exec-color-overlay absolute inset-0 bg-linear-to-br ${member.color} to-transparent opacity-0 group-hover:opacity-40 z-2 transition-all duration-500 mix-blend-overlay`}></div>
 
-                  <div class="absolute inset-0 p-6 sm:p-8 md:p-10 lg:p-14 flex flex-col justify-end z-30">
+                  <div class="absolute inset-0 p-6 sm:p-8 md:p-10 lg:p-14 flex flex-col justify-end z-3">
                     <div class="exec-content relative transition-transform duration-700 group-hover:-translate-y-2">
                       <span class="text-primary font-black tracking-widest text-xs sm:text-sm uppercase block mb-1 sm:mb-2">{member.role}</span>
                       <h3 class="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-black text-white uppercase tracking-tighter mb-1 sm:mb-2 leading-none">{member.name}</h3>
@@ -143,10 +143,10 @@ const administration = structureData?.executive?.administration || staticAdmin;
                     class="exec-img absolute inset-0 w-full h-full object-cover transition-transform duration-1000 group-hover:scale-110 scale-[1.02] no-drag"
                   />
                   
-                  <div class="absolute inset-0 bg-linear-to-t from-black via-black/40 to-transparent opacity-80 z-10 transition-opacity duration-500 group-hover:opacity-80"></div>
-                  <div class={`exec-color-overlay absolute inset-0 bg-linear-to-br ${member.color} to-transparent opacity-0 group-hover:opacity-30 z-20 transition-all duration-500 mix-blend-overlay`}></div>
+                  <div class="absolute inset-0 bg-linear-to-t from-black via-black/40 to-transparent opacity-80 z-1 transition-opacity duration-500 group-hover:opacity-80"></div>
+                  <div class={`exec-color-overlay absolute inset-0 bg-linear-to-br ${member.color} to-transparent opacity-0 group-hover:opacity-30 z-2 transition-all duration-500 mix-blend-overlay`}></div>
 
-                  <div class="absolute inset-0 p-5 sm:p-6 md:p-8 flex flex-col justify-end z-30">
+                  <div class="absolute inset-0 p-5 sm:p-6 md:p-8 flex flex-col justify-end z-3">
                     <div class="exec-content relative transition-transform duration-700 group-hover:-translate-y-1">
                       <span class="text-white/40 font-black tracking-widest text-[10px] sm:text-xs uppercase block mb-1">{member.role}</span>
                       <h3 class="text-xl sm:text-2xl font-black text-white uppercase tracking-tight mb-1 leading-tight">{member.name}</h3>

@@ -1,12 +1,18 @@
 ---
-import AdminContent from "@/components/admin/AdminContent.astro";
 import Footer from "@/components/layout/Footer.astro";
 import Navbar from "@/components/layout/Navbar.astro";
 import Layout from "@/layouts/Layout.astro";
+import AdminStructures from "@/components/admin/AdminStructures.svelte";
 ---
 
 <Layout>
 	<Navbar isAdmin={true} />
-	<AdminContent />
+	<AdminStructures client:only="svelte" />
 	<Footer />
 </Layout>
+
+<style is:global>
+    html {
+        scroll-padding-top: 100px;
+    }
+</style>
