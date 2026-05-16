@@ -1,3 +1,7 @@
+---
+import { Image } from "astro:assets";
+---
+
 <section class="container mx-auto px-4 sm:px-6 py-8 sm:py-10 md:py-12" id="kontak">
   <div class="max-w-sm sm:max-w-md md:max-w-lg lg:max-w-2xl mx-auto">
     <!-- Instagram -->
@@ -7,7 +11,7 @@
           <div class="w-10 h-10 sm:w-12 sm:h-12 rounded-full p-[2px] bg-linear-to-tr from-yellow-400 via-red-500 to-purple-500">
             <div class="w-full h-full bg-white rounded-full p-[2px]">
               <div class="w-full h-full rounded-full flex items-center justify-center overflow-hidden">
-                <img src="/images/logo-mpk.webp" class="w-full h-full object-cover no-drag" alt="MPK Instagram Logo" />
+                <Image src={new URL("/images/logo-mpk.webp", Astro.url).toString()} class="w-full h-full object-cover no-drag" alt="MPK Instagram Logo" width={48} height={48} format="webp" />
               </div>
             </div>
           </div>
@@ -16,18 +20,18 @@
             <p class="text-[10px] sm:text-xs text-gray-500">Instagram Official</p>
           </div>
         </div>
-        <img src="/images/instagram.webp" alt="Instagram MPK" class="w-4 h-4 sm:w-5 sm:h-5" />
+        <Image src={new URL("/images/instagram.webp", Astro.url).toString()} alt="Instagram MPK" class="w-4 h-4 sm:w-5 sm:h-5" width={20} height={20} format="webp" />
       </div>
       
       <div class="grid grid-cols-3 gap-1.5 sm:gap-2 mb-4 sm:mb-6">
         <div class="aspect-square bg-gray-100 rounded-md sm:rounded-lg overflow-hidden">
-          <img src="/images/komisi-b.webp" alt="IG Post 1" class="w-full h-full object-cover no-drag" />
+          <Image src={new URL("/images/komisi-b.webp", Astro.url).toString()} alt="IG Post 1" class="w-full h-full object-cover no-drag" width={300} height={300} format="webp" />
         </div>
         <div class="aspect-square bg-gray-100 rounded-md sm:rounded-lg overflow-hidden">
-          <img src="/images/komisi-c.webp" alt="IG Post 2" class="w-full h-full object-cover no-drag" />
+          <Image src={new URL("/images/komisi-c.webp", Astro.url).toString()} alt="IG Post 2" class="w-full h-full object-cover no-drag" width={300} height={300} format="webp" />
         </div>
         <div class="aspect-square bg-gray-100 rounded-md sm:rounded-lg overflow-hidden">
-          <img src="/images/komisi-d.webp" alt="IG Post 3" class="w-full h-full object-cover no-drag" />
+          <Image src={new URL("/images/komisi-d.webp", Astro.url).toString()} alt="IG Post 3" class="w-full h-full object-cover no-drag" width={300} height={300} format="webp" />
         </div>
       </div>
       

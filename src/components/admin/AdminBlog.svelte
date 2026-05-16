@@ -21,6 +21,7 @@
   import { api } from "@/lib/eden";
   import { adminState, addToast } from "@/lib/adminState.svelte";
   import AdminLayout from "./AdminLayout.svelte";
+  import { getOptimizedImageUrl } from "@/lib/utils";
 
   let newsList: any[] = $state([]);
   let isLoadingData = $state(false);
@@ -45,11 +46,7 @@
   let selectedFile = $state<File | null>(null);
   let isPreviewMode = $state(false);
 
-  function getImageUrl(image: string) {
-    if (!image) return "";
-    if (image.startsWith("http") || image.startsWith("/")) return image;
-    return `/i/${image}`;
-  }
+
 
   onMount(() => {
     if (adminState.apiKey) fetchData();
@@ -180,7 +177,7 @@
       image: news.image || "",
     };
     kategori = news.category?.toLowerCase() === "berita" || news.category?.toLowerCase() === "article" ? "berita" : "info";
-    imagePreview = getImageUrl(news.image);
+    imagePreview = getOptimizedImageUrl(news.image, 400, 300);
     isDialogOpen = true;
   }
 
