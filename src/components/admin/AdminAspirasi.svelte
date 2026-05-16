@@ -1,47 +1,51 @@
 <script lang="ts">
-  import { onMount } from "svelte";
-  import Loader2 from "@lucide/svelte/icons/loader-2";
-  import MessageSquare from "@lucide/svelte/icons/message-square";
-  import LinkIcon from "@lucide/svelte/icons/link";
-  import { api } from "@/lib/eden";
-  import { adminState } from "@/lib/adminState.svelte";
-  import AdminLayout from "./AdminLayout.svelte";
+import { onMount } from "svelte";
+import Loader2 from "@lucide/svelte/icons/loader-2";
+import MessageSquare from "@lucide/svelte/icons/message-square";
+import LinkIcon from "@lucide/svelte/icons/link";
+import { api } from "@/lib/eden";
+import { adminState } from "@/lib/adminState.svelte";
+import AdminLayout from "./AdminLayout.svelte";
 
-  let aspirations: any[] = $state([]);
-  let isLoadingData = $state(false);
-  let fetched = false;
+let aspirations: any[] = $state([]);
+let isLoadingData = $state(false);
+let fetched = false;
 
-  let aspirationStatusFilter = $state("Semua");
-  let filteredAspirations = $derived(
-    aspirations.filter((a) => {
-      const matchesStatus = aspirationStatusFilter === "Semua" || a.status?.includes(aspirationStatusFilter);
-      return matchesStatus;
-    }),
-  );
+let aspirationStatusFilter = $state("Semua");
+let filteredAspirations = $derived(
+	aspirations.filter((a) => {
+		const matchesStatus =
+			aspirationStatusFilter === "Semua" ||
+			a.status?.includes(aspirationStatusFilter);
+		return matchesStatus;
+	}),
+);
 
-  onMount(() => {
-    if (adminState.apiKey) fetchData();
-  });
+onMount(() => {
+	if (adminState.apiKey) fetchData();
+});
 
-  $effect(() => {
-    if (adminState.apiKey && !fetched) fetchData();
-  });
+$effect(() => {
+	if (adminState.apiKey && !fetched) fetchData();
+});
 
-  async function fetchData() {
-    if (fetched || isLoadingData) return;
-    isLoadingData = true;
-    fetched = true;
-    try {
-      const aspRes = await api.aspirasi.get({ headers: { "x-api-key": adminState.apiKey } });
-      if (aspRes.data && "data" in aspRes.data && aspRes.data.data) {
-        aspirations = aspRes.data.data;
-      }
-    } catch (err) {
-      console.error(err);
-    } finally {
-      isLoadingData = false;
-    }
-  }
+async function fetchData() {
+	if (fetched || isLoadingData) return;
+	isLoadingData = true;
+	fetched = true;
+	try {
+		const aspRes = await api.aspirasi.get({
+			headers: { "x-api-key": adminState.apiKey },
+		});
+		if (aspRes.data && "data" in aspRes.data && aspRes.data.data) {
+			aspirations = aspRes.data.data;
+		}
+	} catch (err) {
+		console.error(err);
+	} finally {
+		isLoadingData = false;
+	}
+}
 </script>
 
 <AdminLayout activeSection="aspirasi">

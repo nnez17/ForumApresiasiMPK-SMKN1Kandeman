@@ -18,7 +18,11 @@ export type WithElementRef<T, U extends HTMLElement = HTMLElement> = T & {
 
 export function getImageUrl(path: string | undefined | null) {
 	if (!path) return "";
-	if (path.startsWith("http") || path.startsWith("/") || path.startsWith("data:")) {
+	if (
+		path.startsWith("http") ||
+		path.startsWith("/") ||
+		path.startsWith("data:")
+	) {
 		return path;
 	}
 	return `/i/${path}`;

@@ -1,53 +1,63 @@
 <script lang="ts">
-  import { onMount } from "svelte";
-  import { flip } from "svelte/animate";
-  import * as Alert from "@/components/ui/alert/index.js";
-  import Loader2 from "@lucide/svelte/icons/loader-2";
-  import LogOut from "@lucide/svelte/icons/log-out";
-  import X from "@lucide/svelte/icons/x";
-  import ShieldCheck from "@lucide/svelte/icons/shield-check";
-  import Newspaper from "@lucide/svelte/icons/newspaper";
-  import Edit from "@lucide/svelte/icons/edit";
-  import MessageSquare from "@lucide/svelte/icons/message-square";
-  import Users from "@lucide/svelte/icons/users";
-  import { api } from "@/lib/eden";
-  import { adminState, addToast, removeToast, initAuth, logout } from "@/lib/adminState.svelte";
+import { onMount } from "svelte";
+import { flip } from "svelte/animate";
+import * as Alert from "@/components/ui/alert/index.js";
+import Loader2 from "@lucide/svelte/icons/loader-2";
+import LogOut from "@lucide/svelte/icons/log-out";
+import X from "@lucide/svelte/icons/x";
+import ShieldCheck from "@lucide/svelte/icons/shield-check";
+import Newspaper from "@lucide/svelte/icons/newspaper";
+import Edit from "@lucide/svelte/icons/edit";
+import MessageSquare from "@lucide/svelte/icons/message-square";
+import Users from "@lucide/svelte/icons/users";
+import { api } from "@/lib/eden";
+import {
+	adminState,
+	addToast,
+	removeToast,
+	initAuth,
+	logout,
+} from "@/lib/adminState.svelte";
 
-  let { children, activeSection = "dashboard" } = $props();
+let { children, activeSection = "dashboard" } = $props();
 
-  let passwordInput = $state("");
-  let isLoggingIn = $state(false);
+let passwordInput = $state("");
+let isLoggingIn = $state(false);
 
-  onMount(() => {
-    initAuth();
-  });
+onMount(() => {
+	initAuth();
+});
 
-  async function handleLogin(e: Event) {
-    e.preventDefault();
-    isLoggingIn = true;
+async function handleLogin(e: Event) {
+	e.preventDefault();
+	isLoggingIn = true;
 
-    try {
-      const { data, error } = await api.misc.keys.get({
-        query: { secret: passwordInput },
-      });
+	try {
+		const { data, error } = await api.misc.keys.get({
+			query: { secret: passwordInput },
+		});
 
-      if (error || !data || !data.success || !data.data?.key) {
-        addToast("Gagal Masuk", "Password salah. Silahkan coba lagi.", "destructive");
-        isLoggingIn = false;
-        return;
-      }
+		if (error || !data || !data.success || !data.data?.key) {
+			addToast(
+				"Gagal Masuk",
+				"Password salah. Silahkan coba lagi.",
+				"destructive",
+			);
+			isLoggingIn = false;
+			return;
+		}
 
-      adminState.apiKey = data.data.key;
-      localStorage.setItem("admin_xkey", adminState.apiKey);
-      localStorage.setItem("admin_authenticated", "true");
-      adminState.isAuthenticated = true;
-      addToast("Berhasil", "Selamat datang kembali, Admin.");
-    } catch (err) {
-      addToast("Error", "Terjadi kesalahan koneksi.", "destructive");
-    } finally {
-      isLoggingIn = false;
-    }
-  }
+		adminState.apiKey = data.data.key;
+		localStorage.setItem("admin_xkey", adminState.apiKey);
+		localStorage.setItem("admin_authenticated", "true");
+		adminState.isAuthenticated = true;
+		addToast("Berhasil", "Selamat datang kembali, Admin.");
+	} catch (err) {
+		addToast("Error", "Terjadi kesalahan koneksi.", "destructive");
+	} finally {
+		isLoggingIn = false;
+	}
+}
 </script>
 
 <!-- Toast Container -->

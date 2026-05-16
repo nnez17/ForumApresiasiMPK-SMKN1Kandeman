@@ -62,7 +62,7 @@ export default new Elysia({
 	.get("/", async () => {
 		try {
 			const doc = await db.collection("settings").doc("structure").get();
-			
+
 			if (!doc.exists) {
 				// Return default data from files if not in database
 				return {

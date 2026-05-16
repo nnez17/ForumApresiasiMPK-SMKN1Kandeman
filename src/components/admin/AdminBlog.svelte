@@ -1,266 +1,323 @@
 <script lang="ts">
-  import { onMount } from "svelte";
-  import Loader2 from "@lucide/svelte/icons/loader-2";
-  import Newspaper from "@lucide/svelte/icons/newspaper";
-  import Edit from "@lucide/svelte/icons/edit";
-  import Trash2 from "@lucide/svelte/icons/trash-2";
-  import Plus from "@lucide/svelte/icons/plus";
-  import ChevronRight from "@lucide/svelte/icons/chevron-right";
-  import Bold from "@lucide/svelte/icons/bold";
-  import Italic from "@lucide/svelte/icons/italic";
-  import LucideLink from "@lucide/svelte/icons/link";
-  import List from "@lucide/svelte/icons/list";
-  import Heading from "@lucide/svelte/icons/heading";
-  import Eye from "@lucide/svelte/icons/eye";
-  import Type from "@lucide/svelte/icons/type";
-  import Save from "@lucide/svelte/icons/save";
-  import { marked } from "marked";
-  import { upload } from "@vercel/blob/client";
-  import * as Dialog from "@/components/ui/dialog/index.js";
-  import * as AlertDialog from "@/components/ui/alert-dialog/index.js";
-  import { api } from "@/lib/eden";
-  import { adminState, addToast } from "@/lib/adminState.svelte";
-  import AdminLayout from "./AdminLayout.svelte";
+import { onMount } from "svelte";
+import Loader2 from "@lucide/svelte/icons/loader-2";
+import Newspaper from "@lucide/svelte/icons/newspaper";
+import Edit from "@lucide/svelte/icons/edit";
+import Trash2 from "@lucide/svelte/icons/trash-2";
+import Plus from "@lucide/svelte/icons/plus";
+import ChevronRight from "@lucide/svelte/icons/chevron-right";
+import Bold from "@lucide/svelte/icons/bold";
+import Italic from "@lucide/svelte/icons/italic";
+import LucideLink from "@lucide/svelte/icons/link";
+import List from "@lucide/svelte/icons/list";
+import Heading from "@lucide/svelte/icons/heading";
+import Eye from "@lucide/svelte/icons/eye";
+import Type from "@lucide/svelte/icons/type";
+import Save from "@lucide/svelte/icons/save";
+import { marked } from "marked";
+import { upload } from "@vercel/blob/client";
+import * as Dialog from "@/components/ui/dialog/index.js";
+import * as AlertDialog from "@/components/ui/alert-dialog/index.js";
+import { api } from "@/lib/eden";
+import { adminState, addToast } from "@/lib/adminState.svelte";
+import AdminLayout from "./AdminLayout.svelte";
 
-  let newsList: any[] = $state([]);
-  let isLoadingData = $state(false);
-  let isSubmitting = $state(false);
-  let fetched = false;
+let newsList: any[] = $state([]);
+let isLoadingData = $state(false);
+let isSubmitting = $state(false);
+let fetched = false;
 
-  let isDialogOpen = $state(false);
-  let isDeleteDialogOpen = $state(false);
-  let newsToDeleteId = $state<string | null>(null);
+let isDialogOpen = $state(false);
+let isDeleteDialogOpen = $state(false);
+let newsToDeleteId = $state<string | null>(null);
 
-  // Form State
-  let editingId = $state<string | null>(null);
-  let kategori = $state("berita");
-  let form = $state({
-    title: "",
-    excerpt: "",
-    author: "",
-    category: "Berita",
-    image: "",
-  });
-  let imagePreview = $state("");
-  let selectedFile = $state<File | null>(null);
-  let isPreviewMode = $state(false);
+// Form State
+let editingId = $state<string | null>(null);
+let kategori = $state("berita");
+let form = $state({
+	title: "",
+	excerpt: "",
+	author: "",
+	category: "Berita",
+	image: "",
+});
+let imagePreview = $state("");
+let selectedFile = $state<File | null>(null);
+let isPreviewMode = $state(false);
 
-  function getImageUrl(image: string) {
-    if (!image) return "";
-    if (image.startsWith("http") || image.startsWith("/")) return image;
-    return `/i/${image}`;
-  }
+function getImageUrl(image: string) {
+	if (!image) return "";
+	if (image.startsWith("http") || image.startsWith("/")) return image;
+	return `/i/${image}`;
+}
 
-  onMount(() => {
-    if (adminState.apiKey) fetchData();
-  });
+onMount(() => {
+	if (adminState.apiKey) fetchData();
+});
 
-  $effect(() => {
-    if (adminState.apiKey && !fetched) fetchData();
-  });
+$effect(() => {
+	if (adminState.apiKey && !fetched) fetchData();
+});
 
-  async function fetchData() {
-    if (fetched || isLoadingData) return;
-    isLoadingData = true;
-    fetched = true;
-    try {
-      const res = await api.news.get();
-      if (res.data && "data" in res.data && res.data.data) {
-        newsList = res.data.data;
-      }
-    } catch (err) {
-      console.error(err);
-    } finally {
-      isLoadingData = false;
-    }
-  }
+async function fetchData() {
+	if (fetched || isLoadingData) return;
+	isLoadingData = true;
+	fetched = true;
+	try {
+		const res = await api.news.get();
+		if (res.data && "data" in res.data && res.data.data) {
+			newsList = res.data.data;
+		}
+	} catch (err) {
+		console.error(err);
+	} finally {
+		isLoadingData = false;
+	}
+}
 
-  function applyShortcut(type: "bold" | "italic" | "link" | "list" | "heading") {
-    const textarea = document.getElementById("konten") as HTMLTextAreaElement;
-    if (!textarea) return;
+function applyShortcut(type: "bold" | "italic" | "link" | "list" | "heading") {
+	const textarea = document.getElementById("konten") as HTMLTextAreaElement;
+	if (!textarea) return;
 
-    const start = textarea.selectionStart;
-    const end = textarea.selectionEnd;
-    const text = textarea.value;
-    const selectedText = text.substring(start, end);
+	const start = textarea.selectionStart;
+	const end = textarea.selectionEnd;
+	const text = textarea.value;
+	const selectedText = text.substring(start, end);
 
-    let replacement = "";
-    let cursorOffset = 0;
-    let selectionLength = selectedText.length;
-    let newStart = start;
-    let newEnd = end;
+	let replacement = "";
+	let cursorOffset = 0;
+	let selectionLength = selectedText.length;
+	let newStart = start;
+	let newEnd = end;
 
-    const toggleWrapper = (prefix: string, suffix: string) => {
-      if (selectedText.startsWith(prefix) && selectedText.endsWith(suffix)) {
-        replacement = selectedText.slice(prefix.length, -suffix.length);
-        cursorOffset = 0;
-        selectionLength = replacement.length;
-        return true;
-      }
-      if (text.slice(start - prefix.length, start) === prefix && text.slice(end, end + suffix.length) === suffix) {
-        newStart = start - prefix.length;
-        newEnd = end + suffix.length;
-        replacement = selectedText;
-        cursorOffset = 0;
-        selectionLength = selectedText.length;
-        return true;
-      }
-      return false;
-    };
+	const toggleWrapper = (prefix: string, suffix: string) => {
+		if (selectedText.startsWith(prefix) && selectedText.endsWith(suffix)) {
+			replacement = selectedText.slice(prefix.length, -suffix.length);
+			cursorOffset = 0;
+			selectionLength = replacement.length;
+			return true;
+		}
+		if (
+			text.slice(start - prefix.length, start) === prefix &&
+			text.slice(end, end + suffix.length) === suffix
+		) {
+			newStart = start - prefix.length;
+			newEnd = end + suffix.length;
+			replacement = selectedText;
+			cursorOffset = 0;
+			selectionLength = selectedText.length;
+			return true;
+		}
+		return false;
+	};
 
-    let isToggled = false;
-    switch (type) {
-      case "bold":
-        isToggled = toggleWrapper("**", "**");
-        if (!isToggled) { replacement = `**${selectedText}**`; cursorOffset = 2; }
-        break;
-      case "italic":
-        isToggled = toggleWrapper("*", "*");
-        if (!isToggled) { replacement = `*${selectedText}*`; cursorOffset = 1; }
-        break;
-      case "link":
-        isToggled = toggleWrapper("[", "](https://)");
-        if (!isToggled) { replacement = `[${selectedText || "Link Text"}](https://)`; cursorOffset = 1; selectionLength = selectedText.length || 9; }
-        break;
-      case "list":
-        if (selectedText.startsWith("- ")) { replacement = selectedText.slice(2); cursorOffset = 0; selectionLength = replacement.length; }
-        else { replacement = `- ${selectedText}`; cursorOffset = 2; }
-        break;
-      case "heading":
-        if (selectedText.startsWith("## ")) { replacement = selectedText.slice(3); cursorOffset = 0; selectionLength = replacement.length; }
-        else { replacement = `## ${selectedText}`; cursorOffset = 3; }
-        break;
-    }
+	let isToggled = false;
+	switch (type) {
+		case "bold":
+			isToggled = toggleWrapper("**", "**");
+			if (!isToggled) {
+				replacement = `**${selectedText}**`;
+				cursorOffset = 2;
+			}
+			break;
+		case "italic":
+			isToggled = toggleWrapper("*", "*");
+			if (!isToggled) {
+				replacement = `*${selectedText}*`;
+				cursorOffset = 1;
+			}
+			break;
+		case "link":
+			isToggled = toggleWrapper("[", "](https://)");
+			if (!isToggled) {
+				replacement = `[${selectedText || "Link Text"}](https://)`;
+				cursorOffset = 1;
+				selectionLength = selectedText.length || 9;
+			}
+			break;
+		case "list":
+			if (selectedText.startsWith("- ")) {
+				replacement = selectedText.slice(2);
+				cursorOffset = 0;
+				selectionLength = replacement.length;
+			} else {
+				replacement = `- ${selectedText}`;
+				cursorOffset = 2;
+			}
+			break;
+		case "heading":
+			if (selectedText.startsWith("## ")) {
+				replacement = selectedText.slice(3);
+				cursorOffset = 0;
+				selectionLength = replacement.length;
+			} else {
+				replacement = `## ${selectedText}`;
+				cursorOffset = 3;
+			}
+			break;
+	}
 
-    const newText = text.substring(0, newStart) + replacement + text.substring(newEnd);
-    form.excerpt = newText;
+	const newText =
+		text.substring(0, newStart) + replacement + text.substring(newEnd);
+	form.excerpt = newText;
 
-    setTimeout(() => {
-      textarea.focus();
-      const finalStart = newStart + cursorOffset;
-      textarea.setSelectionRange(finalStart, finalStart + selectionLength);
-    }, 0);
-  }
+	setTimeout(() => {
+		textarea.focus();
+		const finalStart = newStart + cursorOffset;
+		textarea.setSelectionRange(finalStart, finalStart + selectionLength);
+	}, 0);
+}
 
-  function handleKeydown(e: KeyboardEvent) {
-    if (e.ctrlKey || e.metaKey) {
-      switch (e.key.toLowerCase()) {
-        case "b": e.preventDefault(); applyShortcut("bold"); break;
-        case "i": e.preventDefault(); applyShortcut("italic"); break;
-        case "k": e.preventDefault(); applyShortcut("link"); break;
-      }
-    }
-  }
+function handleKeydown(e: KeyboardEvent) {
+	if (e.ctrlKey || e.metaKey) {
+		switch (e.key.toLowerCase()) {
+			case "b":
+				e.preventDefault();
+				applyShortcut("bold");
+				break;
+			case "i":
+				e.preventDefault();
+				applyShortcut("italic");
+				break;
+			case "k":
+				e.preventDefault();
+				applyShortcut("link");
+				break;
+		}
+	}
+}
 
-  async function handleFileChange(e: Event) {
-    const target = e.target as HTMLInputElement;
-    const file = target.files?.[0];
-    if (!file) return;
+async function handleFileChange(e: Event) {
+	const target = e.target as HTMLInputElement;
+	const file = target.files?.[0];
+	if (!file) return;
 
-    selectedFile = file;
-    imagePreview = URL.createObjectURL(file);
-  }
+	selectedFile = file;
+	imagePreview = URL.createObjectURL(file);
+}
 
-  function openCreateDialog() {
-    editingId = null;
-    form = { title: "", excerpt: "", author: "", category: "berita", image: "" };
-    kategori = "berita";
-    imagePreview = "";
-    selectedFile = null;
-    isDialogOpen = true;
-  }
+function openCreateDialog() {
+	editingId = null;
+	form = { title: "", excerpt: "", author: "", category: "berita", image: "" };
+	kategori = "berita";
+	imagePreview = "";
+	selectedFile = null;
+	isDialogOpen = true;
+}
 
-  function handleEditNews(news: any) {
-    editingId = news.id;
-    form = {
-      title: news.title,
-      excerpt: news.excerpt || "",
-      author: news.author || "",
-      category: news.category || "berita",
-      image: news.image || "",
-    };
-    kategori = news.category?.toLowerCase() === "berita" || news.category?.toLowerCase() === "article" ? "berita" : "info";
-    imagePreview = getImageUrl(news.image);
-    isDialogOpen = true;
-  }
+function handleEditNews(news: any) {
+	editingId = news.id;
+	form = {
+		title: news.title,
+		excerpt: news.excerpt || "",
+		author: news.author || "",
+		category: news.category || "berita",
+		image: news.image || "",
+	};
+	kategori =
+		news.category?.toLowerCase() === "berita" ||
+		news.category?.toLowerCase() === "article"
+			? "berita"
+			: "info";
+	imagePreview = getImageUrl(news.image);
+	isDialogOpen = true;
+}
 
-  async function handlePublish(e: Event) {
-    e.preventDefault();
-    isSubmitting = true;
+async function handlePublish(e: Event) {
+	e.preventDefault();
+	isSubmitting = true;
 
-    try {
-      const payload = {
-        title: form.title,
-        author: form.author,
-        excerpt: form.excerpt,
-        category: kategori,
-        image: form.image,
-      };
+	try {
+		const payload = {
+			title: form.title,
+			author: form.author,
+			excerpt: form.excerpt,
+			category: kategori,
+			image: form.image,
+		};
 
-      if (selectedFile) {
-        const fileExtension = selectedFile.name.split(".").pop();
-        const uuid = crypto.randomUUID();
-        const fileName = `${uuid}.${fileExtension}`;
+		if (selectedFile) {
+			const fileExtension = selectedFile.name.split(".").pop();
+			const uuid = crypto.randomUUID();
+			const fileName = `${uuid}.${fileExtension}`;
 
-        await upload(`images/${fileName}`, selectedFile, {
-          access: "public",
-          handleUploadUrl: "/api/misc/upload",
-          headers: { "x-api-key": adminState.apiKey },
-        });
-        payload.image = fileName;
-      }
+			await upload(`images/${fileName}`, selectedFile, {
+				access: "public",
+				handleUploadUrl: "/api/misc/upload",
+				headers: { "x-api-key": adminState.apiKey },
+			});
+			payload.image = fileName;
+		}
 
-      if (editingId) {
-        const { data, error } = await api.news({ id: editingId }).put(payload, { headers: { "x-api-key": adminState.apiKey } });
-        if (error || !data || !data.success) throw new Error("Gagal memperbarui konten.");
-        addToast("Berhasil", "Konten berhasil diperbarui!");
-      } else {
-        const { data, error } = await api.news.post(payload, { headers: { "x-api-key": adminState.apiKey } });
-        if (error || !data || !data.success) throw new Error("Gagal mempublikasikan konten.");
-        addToast("Berhasil", "Konten berhasil dipublikasikan!");
-      }
-      isDialogOpen = false;
-      fetched = false; // reset fetch
-      fetchData();
-    } catch (err: any) {
-      addToast("Error", err.message || "Terjadi kesalahan sistem.", "destructive");
-    } finally {
-      isSubmitting = false;
-    }
-  }
+		if (editingId) {
+			const { data, error } = await api
+				.news({ id: editingId })
+				.put(payload, { headers: { "x-api-key": adminState.apiKey } });
+			if (error || !data || !data.success)
+				throw new Error("Gagal memperbarui konten.");
+			addToast("Berhasil", "Konten berhasil diperbarui!");
+		} else {
+			const { data, error } = await api.news.post(payload, {
+				headers: { "x-api-key": adminState.apiKey },
+			});
+			if (error || !data || !data.success)
+				throw new Error("Gagal mempublikasikan konten.");
+			addToast("Berhasil", "Konten berhasil dipublikasikan!");
+		}
+		isDialogOpen = false;
+		fetched = false; // reset fetch
+		fetchData();
+	} catch (err: any) {
+		addToast(
+			"Error",
+			err.message || "Terjadi kesalahan sistem.",
+			"destructive",
+		);
+	} finally {
+		isSubmitting = false;
+	}
+}
 
-  function confirmDelete(id: string) {
-    newsToDeleteId = id;
-    isDeleteDialogOpen = true;
-  }
+function confirmDelete(id: string) {
+	newsToDeleteId = id;
+	isDeleteDialogOpen = true;
+}
 
-  async function deleteNews() {
-    if (!newsToDeleteId) return;
-    const id = newsToDeleteId;
+async function deleteNews() {
+	if (!newsToDeleteId) return;
+	const id = newsToDeleteId;
 
-    try {
-      const newsItem = newsList.find((n) => n.id === id);
-      const { data } = await api.news({ id }).delete(null, { headers: { "x-api-key": adminState.apiKey } });
+	try {
+		const newsItem = newsList.find((n) => n.id === id);
+		const { data } = await api
+			.news({ id })
+			.delete(null, { headers: { "x-api-key": adminState.apiKey } });
 
-      if (data?.success) {
-        if (newsItem?.image) {
-          const imagePath = newsItem.image.startsWith("/api/misc/images/") ? newsItem.image.replace("/api/misc/images/", "") : newsItem.image.startsWith("/i/") ? newsItem.image.replace("/i/", "") : newsItem.image;
-          // @ts-expect-error this work perfectly fine
-          await api.misc.images({ "*": imagePath }).delete(null, { headers: { "x-api-key": adminState.apiKey } });
-        }
-        addToast("Berhasil", "Konten berhasil dihapus.");
-        fetched = false;
-        fetchData();
-      } else {
-        addToast("Error", "Gagal menghapus konten.", "destructive");
-      }
-    } catch (err) {
-      addToast("Error", "Terjadi kesalahan saat menghapus.", "destructive");
-    } finally {
-      isDeleteDialogOpen = false;
-      newsToDeleteId = null;
-    }
-  }
+		if (data?.success) {
+			if (newsItem?.image) {
+				const imagePath = newsItem.image.startsWith("/api/misc/images/")
+					? newsItem.image.replace("/api/misc/images/", "")
+					: newsItem.image.startsWith("/i/")
+						? newsItem.image.replace("/i/", "")
+						: newsItem.image;
+				// @ts-expect-error this work perfectly fine
+				await api.misc
+					.images({ "*": imagePath })
+					.delete(null, { headers: { "x-api-key": adminState.apiKey } });
+			}
+			addToast("Berhasil", "Konten berhasil dihapus.");
+			fetched = false;
+			fetchData();
+		} else {
+			addToast("Error", "Gagal menghapus konten.", "destructive");
+		}
+	} catch (err) {
+		addToast("Error", "Terjadi kesalahan saat menghapus.", "destructive");
+	} finally {
+		isDeleteDialogOpen = false;
+		newsToDeleteId = null;
+	}
+}
 </script>
 
 <AdminLayout activeSection="blog">

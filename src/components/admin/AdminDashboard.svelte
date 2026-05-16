@@ -1,49 +1,51 @@
 <script lang="ts">
-  import { onMount } from "svelte";
-  import Loader2 from "@lucide/svelte/icons/loader-2";
-  import Newspaper from "@lucide/svelte/icons/newspaper";
-  import MessageSquare from "@lucide/svelte/icons/message-square";
-  import Users from "@lucide/svelte/icons/users";
-  import { api } from "@/lib/eden";
-  import { adminState } from "@/lib/adminState.svelte";
-  import AdminLayout from "./AdminLayout.svelte";
+import { onMount } from "svelte";
+import Loader2 from "@lucide/svelte/icons/loader-2";
+import Newspaper from "@lucide/svelte/icons/newspaper";
+import MessageSquare from "@lucide/svelte/icons/message-square";
+import Users from "@lucide/svelte/icons/users";
+import { api } from "@/lib/eden";
+import { adminState } from "@/lib/adminState.svelte";
+import AdminLayout from "./AdminLayout.svelte";
 
-  let isLoadingData = $state(false);
-  let aspirationsCount = $state(0);
-  let newsCount = $state(0);
-  let fetched = false;
+let isLoadingData = $state(false);
+let aspirationsCount = $state(0);
+let newsCount = $state(0);
+let fetched = false;
 
-  onMount(async () => {
-    if (adminState.apiKey) {
-      fetchData();
-    }
-  });
+onMount(async () => {
+	if (adminState.apiKey) {
+		fetchData();
+	}
+});
 
-  $effect(() => {
-    if (adminState.apiKey && !fetched) {
-      fetchData();
-    }
-  });
+$effect(() => {
+	if (adminState.apiKey && !fetched) {
+		fetchData();
+	}
+});
 
-  async function fetchData() {
-    if (fetched || isLoadingData) return;
-    isLoadingData = true;
-    fetched = true;
-    try {
-      const aspRes = await api.aspirasi.get({ headers: { "x-api-key": adminState.apiKey } });
-      if (aspRes.data && "data" in aspRes.data && aspRes.data.data) {
-        aspirationsCount = aspRes.data.data.length;
-      }
-      const newsRes = await api.news.get();
-      if (newsRes.data && "data" in newsRes.data && newsRes.data.data) {
-        newsCount = newsRes.data.data.length;
-      }
-    } catch (err) {
-      console.error(err);
-    } finally {
-      isLoadingData = false;
-    }
-  }
+async function fetchData() {
+	if (fetched || isLoadingData) return;
+	isLoadingData = true;
+	fetched = true;
+	try {
+		const aspRes = await api.aspirasi.get({
+			headers: { "x-api-key": adminState.apiKey },
+		});
+		if (aspRes.data && "data" in aspRes.data && aspRes.data.data) {
+			aspirationsCount = aspRes.data.data.length;
+		}
+		const newsRes = await api.news.get();
+		if (newsRes.data && "data" in newsRes.data && newsRes.data.data) {
+			newsCount = newsRes.data.data.length;
+		}
+	} catch (err) {
+		console.error(err);
+	} finally {
+		isLoadingData = false;
+	}
+}
 </script>
 
 <AdminLayout activeSection="dashboard">
