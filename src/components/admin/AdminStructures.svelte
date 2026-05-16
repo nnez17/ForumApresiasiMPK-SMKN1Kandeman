@@ -21,8 +21,12 @@
     commissions: staticCommissions,
   });
 
+  let pendingUploads = new Map<string, File>();
+  let imagesToDelete = new Set<string>();
+
   function getImageUrl(image: string) {
     if (!image) return "";
+    if (image.startsWith("blob:")) return image;
     if (image.startsWith("http") || image.startsWith("/")) return image;
     return `/i/${image}`;
   }
@@ -54,8 +58,38 @@
   async function handleUpdateStructure() {
     isSubmitting = true;
     try {
+      for (const [blobUrl, file] of pendingUploads.entries()) {
+        const fileExtension = file.name.split(".").pop();
+        const uuid = crypto.randomUUID();
+        const fileName = `${uuid}.${fileExtension}`;
+        
+        await upload(`images/${fileName}`, file, { access: "public", handleUploadUrl: "/api/misc/upload", headers: { "x-api-key": adminState.apiKey } });
+        
+        const replaceBlobUrl = (obj: any) => {
+          for (const key in obj) {
+            if (typeof obj[key] === "string" && obj[key] === blobUrl) {
+              obj[key] = fileName;
+            } else if (typeof obj[key] === "object" && obj[key] !== null) {
+              replaceBlobUrl(obj[key]);
+            }
+          }
+        };
+        replaceBlobUrl(structureData);
+      }
+
+      for (const fileName of imagesToDelete) {
+        await fetch(`/api/misc/images/${fileName}`, {
+          method: "DELETE",
+          headers: { "x-api-key": adminState.apiKey }
+        });
+      }
+
       const { data, error } = await api.structure.put(structureData, { headers: { "x-api-key": adminState.apiKey } });
       if (error || !data || !data.success) throw new Error("Gagal memperbarui struktur.");
+      
+      pendingUploads.clear();
+      imagesToDelete.clear();
+
       addToast("Berhasil", "Struktur organisasi berhasil diperbarui!");
     } catch (err: any) {
       addToast("Error", err.message || "Terjadi kesalahan.", "destructive");
@@ -68,12 +102,30 @@
     structureData.executive.assistants = [...structureData.executive.assistants, { role: "WAKIL KETUA", name: "", class: "", description: "", image: "", color: "from-blue-500 to-indigo-600" }];
   }
   function removeAssistant(index: number) {
+    const assistant = structureData.executive.assistants[index];
+    if (assistant.image) {
+      if (assistant.image.startsWith("blob:")) {
+        pendingUploads.delete(assistant.image);
+        URL.revokeObjectURL(assistant.image);
+      } else {
+        imagesToDelete.add(assistant.image);
+      }
+    }
     structureData.executive.assistants = structureData.executive.assistants.filter((_, i) => i !== index);
   }
   function addAdminMember() {
     structureData.executive.administration = [...structureData.executive.administration, { role: "STAF", name: "", class: "", description: "", image: "", color: "from-blue-500 to-indigo-600" }];
   }
   function removeAdminMember(index: number) {
+    const admin = structureData.executive.administration[index];
+    if (admin.image) {
+      if (admin.image.startsWith("blob:")) {
+        pendingUploads.delete(admin.image);
+        URL.revokeObjectURL(admin.image);
+      } else {
+        imagesToDelete.add(admin.image);
+      }
+    }
     structureData.executive.administration = structureData.executive.administration.filter((_, i) => i !== index);
   }
   function addCommissionMember(commIndex: number) {
@@ -88,17 +140,25 @@
     const file = target.files?.[0];
     if (!file) return;
     try {
-      const fileExtension = file.name.split(".").pop();
-      const uuid = crypto.randomUUID();
-      const fileName = `${uuid}.${fileExtension}`;
-      await upload(`images/${fileName}`, file, { access: "public", handleUploadUrl: "/api/misc/upload", headers: { "x-api-key": adminState.apiKey } });
-      
       const keys = path.split(".");
       let current = structureData as any;
       for (let i = 0; i < keys.length - 1; i++) current = current[keys[i]];
-      current[keys[keys.length - 1]] = fileName;
+      
+      const oldImage = current[keys[keys.length - 1]];
+      if (oldImage) {
+        if (oldImage.startsWith("blob:")) {
+          pendingUploads.delete(oldImage);
+          URL.revokeObjectURL(oldImage);
+        } else {
+          imagesToDelete.add(oldImage);
+        }
+      }
+
+      const blobUrl = URL.createObjectURL(file);
+      pendingUploads.set(blobUrl, file);
+      current[keys[keys.length - 1]] = blobUrl;
     } catch (err) {
-      addToast("Error", "Gagal mengunggah foto.", "destructive");
+      addToast("Error", "Gagal menyiapkan foto.", "destructive");
     }
   }
 

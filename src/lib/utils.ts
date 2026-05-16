@@ -21,5 +21,5 @@ export function getImageUrl(path: string | undefined | null) {
 	if (path.startsWith("http") || path.startsWith("/") || path.startsWith("data:")) {
 		return path;
 	}
-	return `/api/upload/${path}`;
+	return `/i/${path}`;
 }
