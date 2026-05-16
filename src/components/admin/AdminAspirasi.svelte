@@ -3,7 +3,7 @@ import { onMount } from "svelte";
 import Loader2 from "@lucide/svelte/icons/loader-2";
 import MessageSquare from "@lucide/svelte/icons/message-square";
 import LinkIcon from "@lucide/svelte/icons/link";
-import { api } from "@/lib/eden";
+import { api } from "@/lib/eden/client";
 import { adminState } from "@/lib/adminState.svelte";
 import AdminLayout from "./AdminLayout.svelte";
 

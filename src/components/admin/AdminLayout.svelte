@@ -10,7 +10,7 @@ import Newspaper from "@lucide/svelte/icons/newspaper";
 import Edit from "@lucide/svelte/icons/edit";
 import MessageSquare from "@lucide/svelte/icons/message-square";
 import Users from "@lucide/svelte/icons/users";
-import { api } from "@/lib/eden";
+import { api } from "@/lib/eden/client";
 import {
 	adminState,
 	addToast,

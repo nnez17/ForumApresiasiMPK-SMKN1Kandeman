@@ -5,7 +5,7 @@ import TriangleAlert from "@lucide/svelte/icons/triangle-alert";
 import { onMount } from "svelte";
 import { cubicOut } from "svelte/easing";
 import { Tween } from "svelte/motion";
-import { api } from "@/lib/eden";
+import { api } from "@/lib/eden/client";
 
 // Tweened values for animations
 const totalCount = new Tween(0, { duration: 800, easing: cubicOut });

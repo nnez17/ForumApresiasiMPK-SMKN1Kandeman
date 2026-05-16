@@ -18,7 +18,7 @@ import { marked } from "marked";
 import { upload } from "@vercel/blob/client";
 import * as Dialog from "@/components/ui/dialog/index.js";
 import * as AlertDialog from "@/components/ui/alert-dialog/index.js";
-import { api } from "@/lib/eden";
+import { api } from "@/lib/eden/client";
 import { adminState, addToast } from "@/lib/adminState.svelte";
 import AdminLayout from "./AdminLayout.svelte";
 import { getOptimizedImageUrl } from "@/lib/utils";

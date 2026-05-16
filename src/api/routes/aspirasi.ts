@@ -1,6 +1,6 @@
 import Elysia from "elysia";
 import { sheets } from "@/lib/google";
-import admin from "./middleware/admin";
+import admin from "../middleware/admin";
 
 export default new Elysia({
 	prefix: "/aspirasi",

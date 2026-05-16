@@ -1,19 +1,10 @@
 ---
-import {
-	commissions as staticCommissions,
-	type Person,
-} from "@/data/Commission";
 import { Image } from "astro:assets";
-import { api } from "@/lib/eden";
+import { api } from "@/lib/eden/server";
 import { getImageUrl } from "@/lib/utils";
 
-const { data: structureResponse } = await api.structure.get();
-const structureData = structureResponse?.success
-	? structureResponse.data
-	: null;
-
-const commissions =
-	(structureData?.commissions as Person[]) || staticCommissions;
+const { data: commResponse } = await api.config.commissions.get();
+const commissions = commResponse?.success ? commResponse.data : [];
 ---
 
 <section class="w-full bg-black overflow-hidden" id="komisi">
@@ -36,12 +27,12 @@ const commissions =
 
   <!-- Full Image Grid -->
   <div class="grid grid-cols-1 md:grid-cols-2">
-    {commissions.map((komisi: Person) => (
+    {commissions.map((komisi) => (
       <div class="relative aspect-3/4 group overflow-hidden bg-gray-900">
         {/* Main Images */}
         <Image 
           src={new URL(getImageUrl(komisi.image), Astro.url).toString()} 
-          alt={komisi.subtitle} 
+          alt={komisi.name} 
           width={1200}
           height={1600}
           format="webp"
@@ -50,15 +41,15 @@ const commissions =
         
         {/* Overlays */}
         <div class="absolute inset-0 bg-linear-to-t from-black via-black/40 to-transparent opacity-80 z-1 transition-opacity duration-200"></div>
-        <div class={`komisi-color-overlay absolute inset-0 bg-linear-to-br ${komisi.color} to-transparent opacity-0 group-hover:opacity-40 z-2 transition-opacity duration-200`}></div>
+        <div class="komisi-color-overlay absolute inset-0 bg-linear-to-br from-blue-600/40 to-transparent opacity-0 group-hover:opacity-40 z-2 transition-opacity duration-200"></div>
 
         {/* Content */}
         <div class="absolute inset-0 p-5 sm:p-6 md:p-8 lg:p-12 xl:p-16 flex flex-col justify-end">
           {/* Main Text */}
           <div class="komisi-content relative z-1 transition-transform duration-500 group-hover:-translate-y-1">
-            <span class="text-primary font-black tracking-widest text-xs sm:text-sm uppercase block mb-2 sm:mb-3 md:mb-4">{komisi.title}</span>
+            <span class="text-primary font-black tracking-widest text-xs sm:text-sm uppercase block mb-2 sm:mb-3 md:mb-4">KOMISI {komisi.id}</span>
             <h3 class="text-2xl sm:text-3xl md:text-4xl lg:text-5xl xl:text-6xl font-black text-white mb-1 sm:mb-2 uppercase leading-none tracking-tighter">
-              {komisi.subtitle}
+              {komisi.name}
             </h3>
             <p class="text-primary font-bold text-sm sm:text-base md:text-lg mb-3 sm:mb-4 md:mb-6 uppercase tracking-wider">{komisi.fullName}</p>
             
@@ -82,10 +73,10 @@ const commissions =
                 <div>
                   <span class="text-[9px] sm:text-[10px] text-white/40 font-black uppercase tracking-[0.3em] block mb-2 sm:mb-3 md:mb-4">Anggota Komisi</span>
                   <div class="grid grid-cols-1 sm:grid-cols-2 gap-x-4 sm:gap-x-6 gap-y-1.5 sm:gap-y-2">
-                    {komisi.members.map((member: string) => (
+                    {komisi.members.map((member: any) => (
                       <div class="flex items-center gap-2 sm:gap-3">
                         <div class="w-1 h-1 sm:w-1.5 sm:h-1.5 rounded-full bg-primary/60"></div>
-                        <span class="text-xs sm:text-sm text-white/70 font-medium">{member}</span>
+                        <span class="text-xs sm:text-sm text-white/70 font-medium">{typeof member === 'string' ? member : `${member.name} (${member.class})`}</span>
                       </div>
                     ))}
                   </div>

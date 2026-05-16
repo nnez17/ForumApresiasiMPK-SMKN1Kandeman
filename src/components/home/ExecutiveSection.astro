@@ -1,23 +1,15 @@
 ---
 import { ChevronDown } from "@lucide/astro";
-import {
-	administration as staticAdmin,
-	assistants as staticAssistants,
-	leader as staticLeader,
-	type Person,
-} from "@/data/Executive";
 import { Image } from "astro:assets";
-import { api } from "@/lib/eden";
+import { api } from "@/lib/eden/server";
 import { getImageUrl } from "@/lib/utils";
 
-const { data: structureResponse } = await api.structure.get();
-const structureData = structureResponse?.success
-	? structureResponse.data
-	: null;
+const { data: execResponse } = await api.config.executive.get();
+const execData = execResponse?.success ? execResponse.data : null;
 
-const leader = structureData?.executive?.leader || staticLeader;
-const assistants = structureData?.executive?.assistants || staticAssistants;
-const administration = structureData?.executive?.administration || staticAdmin;
+const leader = execData?.leader ?? { role: "", name: "", class: "", description: "", image: "" };
+const assistants = execData?.assistants ?? [];
+const administration = execData?.administration ?? [];
 ---
 
 <section class="w-full bg-[#050505] py-16 sm:py-20 md:py-28 lg:py-32 px-4 overflow-hidden relative" id="pengurus">
@@ -58,7 +50,7 @@ const administration = structureData?.executive?.administration || staticAdmin;
             
             {/* Overlays */}
             <div class="absolute inset-0 bg-linear-to-t from-black via-black/40 to-transparent opacity-80 z-1 transition-opacity duration-500 group-hover:opacity-70"></div>
-            <div class={`exec-color-overlay absolute inset-0 bg-linear-to-br ${leader.color} to-transparent opacity-0 group-hover:opacity-40 z-2 transition-all duration-500 mix-blend-overlay`}></div>
+            <div class="exec-color-overlay absolute inset-0 bg-linear-to-br from-blue-500 to-indigo-600/0 opacity-0 group-hover:opacity-40 z-2 transition-all duration-500 mix-blend-overlay"></div>
 
             {/* Content */}
             <div class="absolute inset-0 p-6 sm:p-8 md:p-12 lg:p-20 flex flex-col justify-end z-3">
@@ -87,7 +79,7 @@ const administration = structureData?.executive?.administration || staticAdmin;
         <div class="absolute top-0 left-[25%] right-[25%] h-px bg-white/10 hidden md:block"></div>
         
         <div class="grid grid-cols-1 md:grid-cols-2 gap-8 sm:gap-10 md:gap-12 pt-6 sm:pt-8 md:pt-12">
-          {assistants.map((member: Person, index: number) => (
+          {assistants.map((member, index) => (
             <div class="flex flex-col items-center">
               <div class="w-px h-10 sm:h-12 md:h-16 bg-white/10 hidden md:block mb-4 sm:mb-6 md:mb-8"></div>
               
@@ -103,7 +95,7 @@ const administration = structureData?.executive?.administration || staticAdmin;
                   />
                   
                   <div class="absolute inset-0 bg-linear-to-t from-black via-black/40 to-transparent opacity-80 z-1 transition-opacity duration-500 group-hover:opacity-70"></div>
-                  <div class={`exec-color-overlay absolute inset-0 bg-linear-to-br ${member.color} to-transparent opacity-0 group-hover:opacity-40 z-2 transition-all duration-500 mix-blend-overlay`}></div>
+                  <div class="exec-color-overlay absolute inset-0 bg-linear-to-br from-blue-500 to-indigo-600/0 opacity-0 group-hover:opacity-40 z-2 transition-all duration-500 mix-blend-overlay"></div>
 
                   <div class="absolute inset-0 p-6 sm:p-8 md:p-10 lg:p-14 flex flex-col justify-end z-3">
                     <div class="exec-content relative transition-transform duration-700 group-hover:-translate-y-2">
@@ -138,7 +130,7 @@ const administration = structureData?.executive?.administration || staticAdmin;
         <div class="absolute top-0 left-[16.6%] right-[16.6%] h-px bg-white/10 hidden md:block"></div>
         
         <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6 sm:gap-8 pt-6 sm:pt-8 md:pt-12">
-          {administration.map((member: Person) => (
+          {administration.map((member) => (
             <div class="flex flex-col items-center">
               <div class="w-px h-8 sm:h-10 md:h-12 bg-white/10 hidden md:block mb-4 sm:mb-6 md:mb-8"></div>
               
@@ -154,7 +146,7 @@ const administration = structureData?.executive?.administration || staticAdmin;
                   />
                   
                   <div class="absolute inset-0 bg-linear-to-t from-black via-black/40 to-transparent opacity-80 z-1 transition-opacity duration-500 group-hover:opacity-80"></div>
-                  <div class={`exec-color-overlay absolute inset-0 bg-linear-to-br ${member.color} to-transparent opacity-0 group-hover:opacity-30 z-2 transition-all duration-500 mix-blend-overlay`}></div>
+                  <div class="exec-color-overlay absolute inset-0 bg-linear-to-br from-blue-500 to-indigo-600/0 opacity-0 group-hover:opacity-30 z-2 transition-all duration-500 mix-blend-overlay"></div>
 
                   <div class="absolute inset-0 p-5 sm:p-6 md:p-8 flex flex-col justify-end z-3">
                     <div class="exec-content relative transition-transform duration-700 group-hover:-translate-y-1">

@@ -1,7 +1,7 @@
 import { del } from "@vercel/blob";
 import { type HandleUploadBody, handleUpload } from "@vercel/blob/client";
 import Elysia, { t } from "elysia";
-import admin from "./middleware/admin";
+import admin from "../middleware/admin";
 
 export default new Elysia({
 	prefix: "/misc",

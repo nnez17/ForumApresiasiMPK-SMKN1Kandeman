@@ -6,16 +6,10 @@ import Plus from "@lucide/svelte/icons/plus";
 import Trash2 from "@lucide/svelte/icons/trash-2";
 import Save from "@lucide/svelte/icons/save";
 import { upload } from "@vercel/blob/client";
-import { api } from "@/lib/eden";
+import { api } from "@/lib/eden/client";
 import { adminState, addToast } from "@/lib/adminState.svelte";
 import AdminLayout from "./AdminLayout.svelte";
 import { getOptimizedImageUrl } from "@/lib/utils";
-import { commissions as staticCommissions } from "@/data/Commission";
-import {
-	leader as staticLeader,
-	assistants as staticAssistants,
-	administration as staticAdministration,
-} from "@/data/Executive";
 
 let isSubmitting = $state(false);
 let isLoadingData = $state(false);
@@ -23,11 +17,19 @@ let fetched = false;
 
 let structureData = $state({
 	executive: {
-		leader: staticLeader,
-		assistants: staticAssistants,
-		administration: staticAdministration,
+		leader: { role: "KETUA UMUM", name: "", class: "", description: "", image: "" },
+		assistants: [] as { role: string; name: string; class: string; description: string; image: string }[],
+		administration: [] as { role: string; name: string; class: string; description: string; image: string }[],
 	},
-	commissions: staticCommissions,
+	commissions: [] as {
+		id: string;
+		name: string;
+		fullName: string;
+		description: string;
+		image: string;
+		coordinator: { name: string; class: string };
+		members: { name: string; class: string }[];
+	}[],
 });
 
 let pendingUploads = new Map<string, File>();
@@ -46,9 +48,16 @@ async function fetchData() {
 	isLoadingData = true;
 	fetched = true;
 	try {
-		const res = await api.structure.get();
-		if (res.data && "data" in res.data && res.data.data) {
-			structureData = res.data.data as any;
+		const [execRes, commRes] = await Promise.all([
+			api.config.executive.get(),
+			api.config.commissions.get(),
+		]);
+
+		if (execRes.data && "data" in execRes.data && execRes.data.data) {
+			structureData.executive = execRes.data.data as any;
+		}
+		if (commRes.data && "data" in commRes.data && commRes.data.data) {
+			structureData.commissions = commRes.data.data as any;
 		}
 	} catch (err) {
 		console.error(err);
@@ -90,11 +99,23 @@ async function handleUpdateStructure() {
 			});
 		}
 
-		const { data, error } = await api.structure.put(structureData, {
-			headers: { "x-api-key": adminState.apiKey },
-		});
-		if (error || !data || !data.success)
+		const [execResult, commResult] = await Promise.all([
+			api.config.executive.put(structureData.executive, {
+				headers: { "x-api-key": adminState.apiKey },
+			}),
+			api.config.commissions.put(structureData.commissions as any, {
+				headers: { "x-api-key": adminState.apiKey },
+			}),
+		]);
+
+		if (
+			execResult.error ||
+			!execResult.data?.success ||
+			commResult.error ||
+			!commResult.data?.success
+		) {
 			throw new Error("Gagal memperbarui struktur.");
+		}
 
 		pendingUploads.clear();
 		imagesToDelete.clear();
@@ -116,7 +137,6 @@ function addAssistant() {
 			class: "",
 			description: "",
 			image: "",
-			color: "from-blue-500 to-indigo-600",
 		},
 	];
 }
@@ -142,7 +162,6 @@ function addAdminMember() {
 			class: "",
 			description: "",
 			image: "",
-			color: "from-blue-500 to-indigo-600",
 		},
 	];
 }
@@ -162,7 +181,7 @@ function removeAdminMember(index: number) {
 function addCommissionMember(commIndex: number) {
 	structureData.commissions[commIndex].members = [
 		...structureData.commissions[commIndex].members,
-		"",
+		{ name: "", class: "" },
 	];
 }
 function removeCommissionMember(commIndex: number, memberIndex: number) {
@@ -385,8 +404,8 @@ function autoHeight(node: HTMLTextAreaElement, value: string) {
             <div class="py-12 space-y-8">
               <div class="flex items-center justify-between">
                 <div>
-                  <h4 class="font-black text-lg uppercase tracking-tight leading-tight text-foreground">{commission.title}</h4>
-                  <p class="text-[10px] font-bold text-muted-foreground uppercase tracking-widest">{commission.subtitle}</p>
+                  <h4 class="font-black text-lg uppercase tracking-tight leading-tight text-foreground">KOMISI {commission.id}</h4>
+                  <p class="text-[10px] font-bold text-muted-foreground uppercase tracking-widest">{commission.name}</p>
                 </div>
               </div>
               <div class="grid grid-cols-1 md:grid-cols-12 gap-8">
@@ -394,7 +413,7 @@ function autoHeight(node: HTMLTextAreaElement, value: string) {
                 <div class="md:col-span-4 space-y-6">
                   <div class="relative group aspect-square max-w-[140px] mx-auto md:mx-0 rounded-3xl overflow-hidden bg-muted border border-border flex items-center justify-center shadow-inner">
                     {#if commission.image}
-                      <img src={getOptimizedImageUrl(commission.image, 280, 280)} alt={commission.title} class="w-full h-full object-cover" />
+                      <img src={getOptimizedImageUrl(commission.image, 280, 280)} alt={commission.fullName} class="w-full h-full object-cover" />
                     {:else}
                       <Users class="w-10 h-10 text-muted-foreground/30" />
                     {/if}
@@ -434,11 +453,12 @@ function autoHeight(node: HTMLTextAreaElement, value: string) {
                         <Plus class="w-3.5 h-3.5" /> Tambah Anggota
                       </button>
                     </div>
-                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                    <div class="grid grid-cols-1 gap-3">
                       {#each commission.members as member, mi}
                         <div class="flex flex-col gap-1.5 group/member">
                           <div class="flex items-center gap-2">
-                            <input id="comm-{ci}-member-{mi}" type="text" bind:value={commission.members[mi]} placeholder="Nama Anggota (Kelas)" class="flex-1 px-4 py-2 rounded-xl bg-background border border-border focus:border-primary outline-none transition-all font-medium text-xs" />
+                            <input id="comm-{ci}-member-{mi}-name" type="text" bind:value={commission.members[mi].name} placeholder="Nama Anggota" class="flex-1 px-4 py-2 rounded-xl bg-background border border-border focus:border-primary outline-none transition-all font-medium text-xs" />
+                            <input id="comm-{ci}-member-{mi}-class" type="text" bind:value={commission.members[mi].class} placeholder="Kelas" class="w-24 px-3 py-2 rounded-xl bg-background border border-border focus:border-primary outline-none transition-all font-medium text-xs" />
                             <button onclick={() => removeCommissionMember(ci, mi)} class="p-2 bg-red-500/5 text-red-600 rounded-xl border border-red-500/10 transition-all active:scale-90 shadow-xs hover:bg-red-500/10" title="Hapus Anggota">
                               <Trash2 class="w-4 h-4" />
                             </button>

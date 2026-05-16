@@ -1,9 +1,9 @@
 import { openapi } from "@elysia/openapi";
 import { Elysia, redirect } from "elysia";
-import aspirasi from "./aspirasi";
-import misc from "./misc";
-import news from "./news";
-import structure from "./structure";
+import aspirasi from "./routes/aspirasi";
+import misc from "./routes/misc";
+import news from "./routes/news";
+import config from "./routes/config";
 
 export const app = new Elysia({ prefix: "/api" })
 	.use(
@@ -30,7 +30,7 @@ export const app = new Elysia({ prefix: "/api" })
 	.use(aspirasi)
 	.use(news)
 	.use(misc)
-	.use(structure)
+	.use(config)
 	.get("/", () => redirect("/api/docs"), { detail: { hide: true } });
 
 export type App = typeof app;
