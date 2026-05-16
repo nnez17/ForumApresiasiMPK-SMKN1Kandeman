@@ -3,7 +3,6 @@ import { onMount } from "svelte";
 import Loader2 from "@lucide/svelte/icons/loader-2";
 import Newspaper from "@lucide/svelte/icons/newspaper";
 import MessageSquare from "@lucide/svelte/icons/message-square";
-import Users from "@lucide/svelte/icons/users";
 import { api } from "@/lib/eden/client";
 import { adminState } from "@/lib/adminState.svelte";
 import AdminLayout from "./AdminLayout.svelte";
@@ -49,47 +48,47 @@ async function fetchData() {
 </script>
 
 <AdminLayout activeSection="dashboard">
-  <div class="mb-8">
-    <h2 class="text-2xl font-black text-foreground flex items-center gap-2">
-      <Newspaper class="w-6 h-6 text-primary" />
-      Dashboard Recap
-    </h2>
-    <p class="text-muted-foreground mt-1">Ringkasan semua data di sistem.</p>
-  </div>
+  <div class="space-y-8">
+    <!-- Clean Header -->
+    <div class="pb-6 border-b border-border/50">
+      <h1 class="text-3xl font-black text-foreground tracking-tight mb-2">Overview</h1>
+      <p class="text-muted-foreground">Statistik Konten & Aspirasi</p>
+    </div>
 
-  {#if isLoadingData}
-    <div class="flex items-center justify-center py-20">
-      <Loader2 class="w-10 h-10 animate-spin text-primary" />
-    </div>
-  {:else}
-    <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-      <div class="bg-muted p-6 rounded-2xl flex items-center gap-4 border border-border">
-        <div class="p-4 bg-primary/10 rounded-xl text-primary">
-          <Newspaper class="w-8 h-8" />
-        </div>
-        <div>
-          <p class="text-sm font-bold text-muted-foreground uppercase tracking-wider">Total Berita</p>
-          <p class="text-4xl font-black text-foreground">{newsCount}</p>
-        </div>
+    {#if isLoadingData}
+      <div class="flex items-center justify-center py-20">
+        <Loader2 class="w-8 h-8 animate-spin text-muted-foreground" />
       </div>
-      <div class="bg-muted p-6 rounded-2xl flex items-center gap-4 border border-border">
-        <div class="p-4 bg-primary/10 rounded-xl text-primary">
-          <MessageSquare class="w-8 h-8" />
-        </div>
-        <div>
-          <p class="text-sm font-bold text-muted-foreground uppercase tracking-wider">Total Aspirasi</p>
-          <p class="text-4xl font-black text-foreground">{aspirationsCount}</p>
-        </div>
+    {:else}
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <!-- News Card -->
+        <a href="/admin/blog" class="block p-8 rounded-2xl bg-muted/30 border border-border">
+        <div class="flex items-center gap-4 mb-6">
+          <div class="p-2.5 bg-background rounded-lg border border-border text-primary">
+            <Newspaper class="w-5 h-5" />
+          </div>
+          <span class="text-xs font-bold uppercase tracking-widest text-muted-foreground">Blog & Berita</span>
+          </div>
+          <div>
+            <div class="text-5xl font-black text-foreground tracking-tighter mb-1">{newsCount}</div>
+            <p class="text-sm font-medium text-muted-foreground">Total artikel dipublikasikan</p>
+          </div>
+        </a>
+
+        <!-- Aspirasi Card -->
+        <a href="/admin/aspirasi" class="block p-8 rounded-2xl bg-muted/30 border border-border">
+          <div class="flex items-center gap-4 mb-6">
+            <div class="p-2.5 bg-background rounded-lg border border-border text-primary">
+              <MessageSquare class="w-5 h-5" />
+            </div>
+            <span class="text-xs font-bold uppercase tracking-widest text-muted-foreground">Aspirasi Siswa</span>
+          </div>
+          <div>
+            <div class="text-5xl font-black text-foreground tracking-tighter mb-1">{aspirationsCount}</div>
+            <p class="text-sm font-medium text-muted-foreground">Total pesan aspirasi masuk</p>
+          </div>
+        </a>
       </div>
-      <div class="bg-muted p-6 rounded-2xl flex items-center gap-4 border border-border">
-        <div class="p-4 bg-primary/10 rounded-xl text-primary">
-          <Users class="w-8 h-8" />
-        </div>
-        <div>
-          <p class="text-sm font-bold text-muted-foreground uppercase tracking-wider">Struktur</p>
-          <p class="text-xl font-black text-foreground">Dikonfigurasi</p>
-        </div>
-      </div>
-    </div>
-  {/if}
+    {/if}
+  </div>
 </AdminLayout>

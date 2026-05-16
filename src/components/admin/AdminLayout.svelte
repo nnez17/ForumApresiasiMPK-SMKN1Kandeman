@@ -6,7 +6,7 @@ import Loader2 from "@lucide/svelte/icons/loader-2";
 import LogOut from "@lucide/svelte/icons/log-out";
 import X from "@lucide/svelte/icons/x";
 import ShieldCheck from "@lucide/svelte/icons/shield-check";
-import Newspaper from "@lucide/svelte/icons/newspaper";
+import LayoutDashboard from "@lucide/svelte/icons/layout-dashboard";
 import Edit from "@lucide/svelte/icons/edit";
 import MessageSquare from "@lucide/svelte/icons/message-square";
 import Users from "@lucide/svelte/icons/users";
@@ -143,7 +143,7 @@ async function handleLogin(e: Event) {
               href="/admin"
               class={`w-full flex items-center gap-3 px-4 py-3 rounded-xl font-bold transition-all ${activeSection === "dashboard" ? "bg-primary/10 text-primary" : "text-muted-foreground hover:text-foreground hover:bg-muted"}`}
             >
-              <Newspaper class="w-5 h-5" />
+              <LayoutDashboard class="w-5 h-5" />
               <span>Dashboard</span>
             </a>
             <a
